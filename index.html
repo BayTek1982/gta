@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bayazit GTA-Schule</title>
+<meta name="theme-color" content="#070b12">
+<meta name="description" content="Lern-App über die Spielereihe Grand Theft Auto: Geschichte, Städte, Spielmechanik, Technik und Jugendschutz – mit kleinen Erklärvideos und Quiz.">
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root,[data-theme="dark"]{
+ --bg:#070b12;--panel:#0e1522;--panel2:#141d2e;--line:#1f2b40;--tx:#e6edf7;--mut:#8a99b3;
+ --gold:#f5b301;--cyan:#22d3ee;--green:#22c55e;--violet:#a78bfa;--red:#f43f5e;--blue:#3b82f6;--pink:#f472b6;--orange:#fb923c;
+ --water:#0b2740;--land:#17271d;--road:#2c3a52;--blk:#1a2436;--scene:#0a101b;--white:#ffffff;--ink:#0a0f18;
+ --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+[data-theme="light"]{
+ --bg:#eef2f7;--panel:#ffffff;--panel2:#f2f5fa;--line:#d6deea;--tx:#0f172a;--mut:#56657f;
+ --gold:#b7860b;--cyan:#0e8fae;--green:#15803d;--violet:#7c3aed;--red:#e11d48;--blue:#2563eb;--pink:#db2777;--orange:#ea580c;
+ --water:#bfe0f5;--land:#d4e8cf;--road:#b6c1d1;--blk:#dfe6ef;--scene:#f8fafc;--white:#ffffff;--ink:#0a0f18;
+ --shadow:0 8px 24px rgba(15,23,42,.08);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{min-height:100%;background:var(--bg)}html,body{margin:0;min-height:100vh;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.mono{font-family:ui-monospace,"JetBrains Mono","SF Mono",Consolas,monospace}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit}
+#app{display:flex;min-height:100vh}
+#side{display:none}
+main{flex:1;min-width:0;max-width:980px;margin:0 auto;padding:0 14px 40px}
+header.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:12px 0 10px;background:linear-gradient(var(--bg) 75%,transparent)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1;cursor:pointer}
+.logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--pink),var(--orange));color:#fff;font-weight:800;font-size:13px;flex:none}
+.brand b{display:block;font-size:13px;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand small{display:block;color:var(--mut);font-size:11px;white-space:nowrap}
+.theme{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:3px;flex:none}
+.theme button{border:0;background:none;padding:5px 8px;border-radius:9px;font-size:12px;color:var(--mut);white-space:nowrap}
+.theme button.on{background:var(--panel2);color:var(--tx);box-shadow:inset 0 0 0 1px var(--line)}
+.theme button span{display:none}
+@media(min-width:520px){.theme button span{display:inline}}
+.hero{padding:6px 2px 14px}
+.hero h1{font-size:24px;line-height:1.15;margin:4px 0 6px;letter-spacing:.02em}
+.hero p{margin:0;color:var(--mut);font-size:14px}
+.kicker{font-size:11px;letter-spacing:.16em;color:var(--pink);font-weight:700}
+.prog{height:6px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:12px}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--pink),var(--gold));border-radius:6px}
+.bento{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{position:relative;overflow:hidden;border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:16px;min-height:170px;text-align:left;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .15s}
+.tile:active{transform:scale(.98)}
+.tile.big{grid-column:span 2;min-height:180px}
+.tile::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 100% 0%,color-mix(in srgb,var(--ac) 22%,transparent),transparent 60%);pointer-events:none}
+.tile .ico{font-size:34px;line-height:1;margin-bottom:10px}
+.tile .tag{font-size:10px;letter-spacing:.14em;color:var(--ac);font-weight:700}
+.tile h3{margin:3px 0 4px;font-size:17px;line-height:1.2}
+.tile p{margin:0;color:var(--mut);font-size:12.5px;line-height:1.4;flex:1}
+.tile .bar{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:11px;color:var(--mut)}
+.tile .bar span.t{flex:1;height:5px;border-radius:5px;background:var(--line);overflow:hidden}
+.tile .bar span.t i{display:block;height:100%;background:var(--ac)}
+.note{margin:14px 0 0;padding:12px 14px;border-radius:14px;border:1px dashed var(--line);color:var(--mut);font-size:12.5px}
+.note b{color:var(--red)}
+.back{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:7px 12px;font-size:13px;margin:4px 0 12px}
+.ahead{border-radius:20px;padding:16px;border:1px solid var(--line);background:var(--panel);position:relative;overflow:hidden;margin-bottom:14px}
+.ahead::before{content:"";position:absolute;inset:0;background:radial-gradient(100% 120% at 100% 0%,color-mix(in srgb,var(--ac) 25%,transparent),transparent 60%)}
+.ahead *{position:relative}
+.ahead .ico{font-size:36px}
+.ahead h2{margin:6px 0 4px;font-size:21px}
+.ahead p{margin:0;color:var(--mut);font-size:13.5px}
+.list{display:grid;gap:10px}
+@media(min-width:700px){.list{grid-template-columns:1fr 1fr}}
+.lcard{display:flex;gap:12px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:12px 14px}
+.lcard .n{font-size:10px;letter-spacing:.14em;color:var(--ac);font-weight:700}
+.lcard h4{margin:2px 0 2px;font-size:15px}
+.lcard p{margin:0;color:var(--mut);font-size:12px}
+.lcard .chk{margin-left:auto;flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);font-size:14px;color:var(--mut)}
+.lcard.seen .chk{background:var(--ac);border-color:var(--ac);color:#fff}
+.player{border:1px solid var(--line);background:var(--panel);border-radius:20px;overflow:hidden}
+.stage{position:relative;background:var(--scene);aspect-ratio:360/220}
+.stage svg{display:block;width:100%;height:100%}
+.ctrl{padding:10px 12px 12px;border-top:1px solid var(--line)}
+.row{display:flex;align-items:center;gap:8px}
+.pbtn{border:1px solid var(--line);background:var(--panel2);border-radius:10px;min-width:38px;height:34px;padding:0 10px;font-size:13px}
+.pbtn.main{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}
+input[type=range]{flex:1;accent-color:var(--ac);min-width:60px}
+.speeds{display:flex;gap:4px}
+.speeds .pbtn{min-width:0;padding:0 8px;font-size:12px}
+.speeds .pbtn.on{background:color-mix(in srgb,var(--ac) 25%,var(--panel2));border-color:var(--ac)}
+.steps{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.steps button{width:34px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--panel2);font-size:12px}
+.steps button.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}
+.steps button.done{border-color:var(--ac)}
+.stxt{margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--panel2);border:1px solid var(--line);min-height:76px}
+.stxt .k{font-size:10.5px;letter-spacing:.14em;color:var(--ac);font-weight:700}
+.stxt p{margin:4px 0 0;font-size:14.5px}
+.info{display:grid;gap:10px;margin-top:14px}
+@media(min-width:700px){.info{grid-template-columns:1fr 1fr}}
+.ibox{border-radius:16px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--c) 45%,var(--line));background:color-mix(in srgb,var(--c) 9%,var(--panel))}
+.ibox b{display:block;font-size:11px;letter-spacing:.12em;color:var(--c);margin-bottom:4px}
+.ibox p{margin:0;font-size:13.5px}
+.nav2{display:flex;gap:10px;margin-top:16px}
+.nav2 button{flex:1;border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:12px;font-size:13px;text-align:left}
+.nav2 button small{display:block;color:var(--mut);font-size:11px}
+.nav2 button.r{text-align:right}
+.nav2 button:disabled{opacity:.35}
+.lh{margin:0 0 10px}
+.lh .n{font-size:11px;letter-spacing:.14em;color:var(--ac);font-weight:700}
+.lh h2{margin:3px 0 0;font-size:20px;line-height:1.2}
+/* Quiz */
+.qcard{border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:16px}
+.qtop{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-bottom:8px}
+.qcard h3{margin:4px 0 12px;font-size:17px;line-height:1.35}
+.qimg{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--scene);margin-bottom:12px;aspect-ratio:360/220}
+.qimg svg{display:block;width:100%;height:100%}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:11px 13px;font-size:14px}
+.opt.ok{border-color:var(--green);background:color-mix(in srgb,var(--green) 18%,var(--panel2))}
+.opt.no{border-color:var(--red);background:color-mix(in srgb,var(--red) 16%,var(--panel2))}
+.fb{margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--panel2);border:1px solid var(--line);font-size:13.5px}
+.fb b.ok{color:var(--green)}.fb b.no{color:var(--red)}
+.qbtns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.qbtns button{flex:1;min-width:140px;border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:11px;font-size:13.5px}
+.qbtns button.main{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}
+.score{font-size:46px;font-weight:800;margin:6px 0}
+.rep{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+.rep li button{width:100%;text-align:left;border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:9px 12px;font-size:13px}
+footer{margin-top:26px;color:var(--mut);font-size:11.5px;text-align:center}
+/* Desktop */
+@media(min-width:1000px){
+ #side{display:block;width:290px;flex:none;border-right:1px solid var(--line);background:var(--panel);height:100vh;position:sticky;top:0;overflow:auto;padding:16px 14px}
+ #side input{width:100%;border:1px solid var(--line);background:var(--panel2);color:var(--tx);border-radius:12px;padding:9px 12px;font:inherit;font-size:13px;margin:10px 0 12px}
+ #side .sg{font-size:10.5px;letter-spacing:.14em;font-weight:700;margin:14px 4px 6px}
+ #side button.si{display:flex;gap:8px;width:100%;text-align:left;border:0;background:none;border-radius:10px;padding:7px 8px;font-size:13px;color:var(--tx)}
+ #side button.si:hover,#side button.si.on{background:var(--panel2)}
+ #side button.si .d{color:var(--mut);margin-left:auto}
+ main{padding:0 28px 40px}
+ .bento{grid-template-columns:repeat(3,1fr)}
+ .tile.big{grid-column:span 2}
+}
+</style>
+</head>
+<body>
+<div id="app">
+ <aside id="side"></aside>
+ <main>
+  <header class="top">
+   <div class="brand" onclick="go('#start')"><div class="logo mono">GTA</div><div><b class="mono">BAYAZIT GTA-SCHULE</b><small>Grand Theft Auto verstehen</small></div></div>
+   <div class="theme" id="theme">
+    <button data-m="dark" title="Dunkel">☾<span> Dunkel</span></button>
+    <button data-m="light" title="Hell">☀<span> Hell</span></button>
+    <button data-m="auto" title="Automatisch">◐<span> Auto</span></button>
+   </div>
+  </header>
+  <div id="view"></div>
+  <footer>Bayazit GTA-Schule · Lern-App über eine Spielereihe · „Grand Theft Auto“ ist eine Marke von Take-Two Interactive / Rockstar Games – diese App ist ein inoffizielles Lernprojekt.</footer>
+ </main>
+</div>
+<script>
+"use strict";
+/* ---------- Speicher ---------- */
+const store={get(k,d){try{const v=localStorage.getItem("gta_"+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem("gta_"+k,JSON.stringify(v))}catch(e){}}};
+/* ---------- Theme ---------- */
+const mq=window.matchMedia?matchMedia("(prefers-color-scheme: light)"):null;
+function applyTheme(){const m=store.get("theme","dark");const t=m==="auto"?(mq&&mq.matches?"light":"dark"):m;document.documentElement.setAttribute("data-theme",t);
+ document.querySelectorAll("#theme button").forEach(b=>b.classList.toggle("on",b.dataset.m===m));
+ const mc=document.querySelector('meta[name=theme-color]');if(mc)mc.content=t==="light"?"#eef2f7":"#070b12";}
+document.querySelectorAll("#theme button").forEach(b=>b.onclick=()=>{store.set("theme",b.dataset.m);applyTheme()});
+if(mq&&mq.addEventListener)mq.addEventListener("change",applyTheme);
+applyTheme();
+
+/* ---------- Szenen-Bausteine ---------- */
+const D=4.5; // Sekunden pro Schritt
+const R=(s,x,y,w,h,c,o,x2)=>Object.assign({t:"rect",s,x,y,w,h,c,o},x2||{});
+const P=(s,x,y,txt,c,x2)=>Object.assign({t:"pill",s,x,y,txt,c},x2||{});
+const T=(s,x,y,txt,c,size,x2)=>Object.assign({t:"txt",s,x,y,txt,c,size},x2||{});
+const A=(s,x1,y1,x2,y2,c,x3)=>Object.assign({t:"arrow",s,x1,y1,x2,y2,c},x3||{});
+const Ln=(s,x1,y1,x2,y2,c,x3)=>Object.assign({t:"line",s,x1,y1,x2,y2,c},x3||{});
+const C=(s,x,y,r,c,o,x2)=>Object.assign({t:"circ",s,x,y,r,c,o},x2||{});
+const G=(s,pts,c,o,x2)=>Object.assign({t:"poly",s,pts,c,o},x2||{});
+const E=(s,x,y,txt,size,x2)=>Object.assign({t:"emo",s,x,y,txt,size},x2||{});
+const B=(s,x,y,w,h,c,x2)=>Object.assign({t:"bar",s,x,y,w,h,c},x2||{});
+const HB=(s,x,y,w,h,c,x2)=>Object.assign({t:"hbar",s,x,y,w,h,c},x2||{});
+const ST=(s,x,y,r,c,fill,x2)=>Object.assign({t:"star",s,x,y,r,c,fill},x2||{});
+const CAR=(s,pts,c,dur,x2)=>Object.assign({t:"car",s,pts,c,dur},x2||{});
+const RING=(s,x,y,r,c,x2)=>Object.assign({t:"ring",s,x,y,r,c},x2||{});
+const PATH=(s,pd,c,x2)=>Object.assign({t:"path",s,pd,c},x2||{});
+function box3d(s,x,y,w,h,dp,c,del){const o={d:del||0};return[
+ G(s,`${x},${y} ${x+w},${y} ${x+w},${y-h} ${x},${y-h}`,c,.85,o),
+ G(s,`${x},${y-h} ${x+dp},${y-h-dp*.6} ${x+w+dp},${y-h-dp*.6} ${x+w},${y-h}`,c,.55,o),
+ G(s,`${x+w},${y} ${x+w+dp},${y-dp*.6} ${x+w+dp},${y-h-dp*.6} ${x+w},${y-h}`,c,.35,o)]}
+function cityGrid(s,x0,y0,n,b,g){const a=[R(s,x0,y0,n*b+(n+1)*g,n*b+(n+1)*g,"road",1,{r:6})];for(let i=0;i<n;i++)for(let j=0;j<n;j++)a.push(R(s,x0+g+i*(b+g),y0+g+j*(b+g),b,b,"blk",1,{r:3,d:.05*(i+j)}));return a}
+function carShape(x,y,c,dmg){return `<g transform="translate(${x},${y})"><rect x="-26" y="-12" width="52" height="14" rx="4" style="fill:${col(c)}"/>`+
+ (dmg?`<polygon points="26,-12 18,-6 26,2" style="fill:var(--scene)"/>`:"")+
+ `<path d="M-14,-12 L-8,-22 L10,-22 L16,-12 Z" style="fill:${col(c)};opacity:.8"/><circle cx="-14" cy="3" r="5" style="fill:var(--tx)"/><circle cx="14" cy="3" r="5" style="fill:var(--tx)"/></g>`}
+
+/* ---------- Bereiche ---------- */
+const AREAS=[
+ {id:"geschichte",name:"Geschichte der Reihe",icon:"🕹️",c:"gold",desc:"Von 1997 bis GTA VI: wie aus einem kleinen 2D-Spiel die erfolgreichste Spielereihe wurde."},
+ {id:"staedte",name:"Städte & Welten",icon:"🌆",c:"cyan",desc:"Liberty City, Vice City, San Andreas, Los Santos, Leonida – und ihre echten Vorbilder."},
+ {id:"spiel",name:"Spielmechanik",icon:"⭐",c:"green",desc:"Offene Welt, Fahndungssterne, Missionen, Fahrzeuge und Radio – so funktioniert ein GTA."},
+ {id:"technik",name:"Technik & Entwicklung",icon:"⚙️",c:"violet",desc:"Rockstar Games, die RAGE-Engine, Streaming, Motion-Capture und Rekordzahlen."},
+ {id:"jugend",name:"Jugendschutz & Gesellschaft",icon:"🛡️",c:"red",desc:"USK 18, Satire, Kontroversen, Forschung – und wie man gesund spielt."}
+];
+
+/* ---------- Lektionen ---------- */
+const L=[
+/* ===== GESCHICHTE ===== */
+{id:"g1",a:"geschichte",title:"Die Anfänge 1997",sub:"DMA Design, Top-Down und GTA 2",
+ steps:["1997 erscheint Grand Theft Auto – entwickelt vom kleinen Studio DMA Design aus Dundee in Schottland.",
+ "Die Kamera schaut senkrecht von oben auf die Stadt. Diese Ansicht heißt „Top-Down“ – alles ist noch 2D.",
+ "Ursprünglich hieß das Projekt „Race'n'Chase“: Man sollte als Polizist Verbrecher jagen. Im Test machte die Rolle des Gejagten mehr Spaß.",
+ "Schon im ersten Teil gibt es die drei Städte Liberty City, San Andreas und Vice City – und ein Fahndungssystem.",
+ "1999 folgt GTA 2: Gangs teilen die Stadt unter sich auf, und je nach Respekt sind sie dir freundlich oder feindlich gesinnt."],
+ els:[...cityGrid(0,14,30,3,44,12),
+ T(0,270,52,"1997","gold",32,{b:1,m:1}),P(0,270,78,"DMA Design · Dundee","gold"),
+ P(1,99,16,"TOP-DOWN · 2D","cyan"),CAR(1,[[20,86],[126,86],[126,195],[20,195]],"pink",7,{sc:.45,loop:1}),
+ P(2,270,106,"Race'n'Chase","blue"),T(2,270,124,"erster Projektname","mut",9),CAR(2,[[20,86],[126,86],[126,195],[20,195]],"blue",7,{sc:.45,loop:1,lag:.9}),
+ P(3,270,148,"Liberty City","cyan",{e:4}),P(3,270,170,"San Andreas","green",{e:4,d:.3}),P(3,270,192,"Vice City","pink",{e:4,d:.6}),
+ R(4,20,36,100,44,"red",.35,{r:3}),R(4,76,92,100,44,"green",.35,{r:3,d:.2}),R(4,20,148,44,44,"violet",.4,{r:3,d:.4}),
+ T(4,270,156,"GTA 2 · 1999","pink",14,{b:1,m:1}),P(4,270,180,"Gangs & Respekt","pink")],
+ info:{was:"Grand Theft Auto (1997) war ein 2D-Actionspiel mit Draufsicht. Man klaut Autos, erledigt Aufträge und flieht vor der Polizei.",
+ so:"Top-Down-Kamera, kleine Pixel-Autos, Aufträge über Telefonzellen – und ein Fahndungslevel, das bei Regelverstößen steigt.",
+ bed:"Aus einem Polizei-Spiel wurde durch Testen ein Spiel über den Gejagten – so entstand die Grundidee der ganzen Reihe.",
+ tipp:"DMA Design ist das Studio, aus dem später Rockstar North wurde. Die Wurzeln von GTA liegen also in Schottland."}},
+{id:"g2",a:"geschichte",title:"GTA III – der Sprung in 3D",sub:"2001: die Open-World-Revolution",
+ steps:["Bis 2000 war GTA flach: eine 2D-Karte, von oben betrachtet.",
+ "2001 wird die Stadt in GTA III zum ersten Mal komplett dreidimensional – man läuft und fährt mitten durch die Straßen.",
+ "Das Spiel erscheint im Oktober 2001 für die PlayStation 2 und wird ein Riesenerfolg.",
+ "Schauplatz ist Liberty City, angelehnt an New York. Der Held heißt Claude und spricht kein einziges Wort.",
+ "GTA III gilt als Vorbild für viele spätere Open-World-Spiele: eine große Stadt, in der man frei entscheidet, was man tut."],
+ els:[R(0,30,60,100,100,"road",1,{r:6}),R(0,38,68,38,38,"blk",1),R(0,84,68,38,38,"blk",1),R(0,38,114,38,38,"blk",1),R(0,84,114,38,38,"blk",1),T(0,80,48,"2D von oben","mut",10,{b:1}),
+ A(1,140,110,186,110,"gold"),...box3d(1,200,170,30,70,14,"cyan",.1),...box3d(1,244,170,26,100,12,"blue",.3),...box3d(1,282,170,32,55,14,"violet",.5),...box3d(1,322,170,20,85,10,"pink",.7),
+ P(1,275,30,"3D-Welt","gold"),
+ P(2,180,205,"PlayStation 2 · Oktober 2001","blue"),
+ P(3,80,180,"Liberty City ≈ New York","cyan"),
+ RING(4,268,120,70,"gold"),P(4,275,8,"Vorbild für Open World","green")],
+ info:{was:"GTA III (2001) ist der erste Teil der Reihe mit einer vollständig dreidimensionalen Stadt.",
+ so:"Freie Kamera hinter der Figur, Autos mit Radiosendern, Missionen bei verschiedenen Auftraggebern – alles in einer zusammenhängenden Stadt.",
+ bed:"Der Sprung in 3D machte GTA weltberühmt. Viele Spiele mit offener Welt bauen bis heute auf diesem Prinzip auf.",
+ tipp:"GTA III, Vice City und San Andreas bilden zusammen die sogenannte „3D-Ära“ der Reihe."}},
+{id:"g3",a:"geschichte",title:"Vice City & San Andreas",sub:"2002 und 2004: die Erfolgsjahre",
+ steps:["2002 erscheint Vice City: Die Geschichte spielt 1986 in einer Stadt nach dem Vorbild von Miami. Held ist Tommy Vercetti.",
+ "2004 folgt San Andreas: 1992, Hauptfigur Carl „CJ“ Johnson – und gleich drei Städte auf einer Karte.",
+ "Neu sind Rollenspiel-Elemente: Ausdauer, Muskeln und Fahrkönnen werden besser, je mehr man sie benutzt.",
+ "Beide Spiele haben riesige Soundtracks mit echter Musik aus der jeweiligen Zeit.",
+ "San Andreas gilt als meistverkauftes Spiel der PlayStation 2."],
+ els:[R(0,10,18,165,122,"pink",.12,{r:14,st:"pink"}),T(0,92,40,"VICE CITY","pink",13,{b:1,m:1}),T(0,92,66,"2002","tx",22,{b:1,m:1}),C(0,40,100,12,"orange",1),
+ Ln(0,150,114,152,84,"orange",{w:3}),PATH(0,"M152,84 q-14,-4 -22,6 M152,84 q12,-6 20,4 M152,84 q-4,-12 -14,-14 M152,84 q6,-12 14,-12","green",{w:2.5}),T(0,92,128,"1986 · Tommy Vercetti","mut",9.5),
+ R(1,185,18,165,122,"green",.12,{r:14,st:"green"}),T(1,267,40,"SAN ANDREAS","green",13,{b:1,m:1}),T(1,267,66,"2004","tx",22,{b:1,m:1}),
+ C(1,215,98,7,"orange",1),C(1,267,92,7,"blue",1,{d:.2}),C(1,319,98,7,"gold",1,{d:.4}),T(1,215,114,"LS","mut",8,{b:1}),T(1,267,108,"SF","mut",8,{b:1}),T(1,319,114,"LV","mut",8,{b:1}),
+ T(1,267,130,"1992 · Carl „CJ“ Johnson","mut",9.5),
+ T(2,142,171,"Ausdauer","mut",9.5,{an:"end"}),HB(2,150,163,150,10,"green"),T(2,142,187,"Muskeln","mut",9.5,{an:"end"}),HB(2,150,179,110,10,"green",{d:.3}),T(2,142,203,"Fahren","mut",9.5,{an:"end"}),HB(2,150,195,175,10,"green",{d:.6}),
+ E(3,36,190,"📻",28),
+ P(4,267,150,"Meistverkauftes PS2-Spiel","gold")],
+ info:{was:"Vice City (2002) und San Andreas (2004) sind die beiden großen Nachfolger von GTA III auf der PlayStation 2.",
+ so:"Vice City erkennst du an Neonfarben und 80er-Jahre-Musik, San Andreas an drei Städten, Landschaft dazwischen und Fitness-Werten.",
+ bed:"Die Reihe wurde mit jedem Teil größer: mehr Fläche, mehr Musik, mehr Möglichkeiten. San Andreas setzte Maßstäbe für Spielwelten.",
+ tipp:"Es gab auch kleinere Ableger, z. B. Liberty City Stories, Vice City Stories (PSP) und Chinatown Wars (Nintendo DS)."}},
+{id:"g4",a:"geschichte",title:"Die HD-Ära: GTA IV & GTA V",sub:"2008 und 2013: Realismus und Rekorde",
+ steps:["2008 erscheint GTA IV: Niko Bellic kommt nach Liberty City. Die Welt wirkt viel realistischer – dank der neuen RAGE-Engine.",
+ "2013 folgt GTA V in Los Santos, dem Gegenstück zu Los Angeles.",
+ "Zum ersten Mal gibt es drei Hauptfiguren – Michael, Franklin und Trevor. Man kann jederzeit zwischen ihnen wechseln.",
+ "GTA V hat laut Take-Two inzwischen über 230 Millionen Exemplare verkauft. Schon in den ersten 3 Tagen nahm es 1 Milliarde US-Dollar ein.",
+ "Dazu kam GTA Online – ein Mehrspieler-Modus, der seit 2013 immer weiter ausgebaut wird."],
+ els:[R(0,10,12,165,82,"blue",.12,{r:14,st:"blue"}),T(0,92,36,"GTA IV · 2008","blue",13,{b:1,m:1}),T(0,92,58,"Niko Bellic · Liberty City","mut",9.5),P(0,92,78,"neue RAGE-Engine","blue"),
+ R(1,185,12,165,82,"green",.12,{r:14,st:"green"}),T(1,267,36,"GTA V · 2013","green",13,{b:1,m:1}),T(1,267,58,"Los Santos ≈ Los Angeles","mut",9.5),
+ P(2,80,112,"3 Hauptfiguren","green"),Ln(2,45,145,115,145,"mut"),Ln(2,45,145,80,192,"mut"),Ln(2,115,145,80,192,"mut"),
+ C(2,45,145,13,"orange",1),C(2,115,145,13,"green",1,{d:.2}),C(2,80,192,13,"red",1,{d:.4}),
+ T(2,45,149,"M","white",11,{b:1}),T(2,115,149,"F","white",11,{b:1}),T(2,80,196,"T","white",11,{b:1}),RING(2,80,160,40,"green"),
+ B(3,215,118,44,82,"green"),T(3,237,111,"230+ Mio.","tx",12,{b:1,m:1}),T(3,237,212,"GTA V verkauft","mut",9),
+ T(3,315,128,"1 Mrd. $","gold",14,{b:1,m:1}),T(3,315,144,"in 3 Tagen","mut",9),
+ P(4,315,182,"GTA Online","violet"),T(4,315,201,"seit 2013","mut",9)],
+ info:{was:"Die HD-Ära beginnt 2008 mit GTA IV. Die Spiele laufen in hoher Auflösung und wirken deutlich realistischer.",
+ so:"Glaubwürdige Fahrphysik, Figuren mit natürlichen Bewegungen, lange Filmsequenzen – und in GTA V der Wechsel zwischen drei Hauptfiguren.",
+ bed:"GTA V wurde eines der erfolgreichsten Unterhaltungsprodukte überhaupt und erschien auf drei Konsolengenerationen.",
+ tipp:"Rechenbeispiel: 1 Milliarde $ in 3 Tagen sind im Schnitt rund 333 Millionen $ pro Tag."}},
+{id:"g5",a:"geschichte",title:"GTA VI – seit 19. November 2026",sub:"Leonida, Lucia & Jason",
+ steps:["Am Donnerstag, 19. November 2026, ist GTA VI erschienen – über 13 Jahre nach GTA V.",
+ "Schauplatz ist der fiktive Bundesstaat Leonida, angelehnt an Florida – mit der Stadt Vice City.",
+ "Zum ersten Mal steht ein Duo im Mittelpunkt: Lucia und Jason, ein kriminelles Paar im Stil von Bonnie & Clyde.",
+ "Das Spiel erscheint für PlayStation 5 und Xbox Series X|S. Eine PC-Version ist noch nicht angekündigt.",
+ "Der Weg dahin war lang: Zuerst war 2025 geplant, dann Mai 2026 – am Ende wurde es November 2026."],
+ els:[R(0,20,22,90,92,"panel2",1,{r:10,st:"red",e:3}),R(0,20,22,90,22,"red",1,{r:10,e:3}),R(0,20,34,90,10,"red",1,{e:3}),T(0,65,38,"NOV 2026","white",10,{b:1,m:1,e:3}),
+ T(0,65,92,"19","tx",38,{b:1,m:1,e:3}),T(0,65,108,"Donnerstag","mut",9,{e:3}),
+ G(1,"170,30 300,28 305,45 318,70 330,105 338,140 334,175 318,195 300,190 290,165 270,130 255,95 245,65 225,55 200,52 172,50","land",1,{st:"cyan",e:4}),
+ P(1,272,96,"Leonida ≈ Florida","cyan",{e:4}),C(1,326,182,5,"pink",1,{d:.5,e:4}),T(1,318,186,"Vice City","pink",9.5,{an:"end",b:1,d:.5,e:4}),
+ C(2,45,160,16,"pink",1,{e:4}),C(2,87,160,16,"blue",1,{d:.2,e:4}),T(2,45,165,"L","white",13,{b:1,e:4}),T(2,87,165,"J","white",13,{b:1,e:4,d:.2}),T(2,66,164,"&","tx",11,{b:1,e:4}),
+ P(2,66,196,"Lucia & Jason","pink",{e:4}),T(2,66,134,"Duo wie Bonnie & Clyde","mut",8.5,{e:4}),
+ P(3,65,40,"PS5","blue",{e:4}),P(3,65,66,"Xbox Series X|S","green",{e:4,d:.2}),T(3,65,92,"PC: noch offen","mut",9,{e:4,d:.4}),
+ Ln(4,30,110,330,110,"line",{w:3}),C(4,60,110,7,"mut",1),C(4,180,110,7,"mut",1,{d:.3}),C(4,300,110,9,"green",1,{d:.6}),
+ T(4,60,90,"2025","mut",12,{b:1,m:1}),T(4,180,90,"Mai 2026","mut",12,{b:1,m:1,d:.3}),T(4,300,90,"19.11.2026","green",12,{b:1,m:1,d:.6}),
+ Ln(4,40,86,80,94,"red",{w:2.5,d:.2}),Ln(4,148,86,212,94,"red",{w:2.5,d:.5}),T(4,60,134,"verschoben","red",9,{d:.2}),T(4,180,134,"verschoben","red",9,{d:.5}),P(4,300,138,"erschienen ✓","green",{d:.8})],
+ info:{was:"GTA VI ist der neueste Hauptteil der Reihe, erschienen am 19. November 2026 für PS5 und Xbox Series X|S.",
+ so:"Erkennbar an Leonida (Florida-Vorbild), Vice City als Großstadt und dem Duo Lucia und Jason.",
+ bed:"Nach über 13 Jahren Wartezeit war GTA VI eines der am meisten erwarteten Spiele überhaupt.",
+ tipp:"Auch GTA VI hat in Deutschland „USK ab 18“ – mehr dazu im Bereich Jugendschutz."}},
+/* ===== STÄDTE ===== */
+{id:"s1",a:"staedte",title:"Liberty City",sub:"Das New York der GTA-Welt",
+ steps:["Liberty City ist die bekannteste GTA-Stadt. In GTA IV ist sie New York sehr genau nachempfunden. Herzstück: Algonquin – das Manhattan der Spielwelt.",
+ "Im Osten liegen Dukes und Broker – die Gegenstücke zu Queens und Brooklyn.",
+ "Im Norden liegt Bohan, angelehnt an die Bronx.",
+ "Im Westen liegt Alderney – das entspricht New Jersey, das in Wirklichkeit ein eigener Bundesstaat ist.",
+ "Im Hafen steht die „Statue of Happiness“ – eine Anspielung auf die Freiheitsstatue."],
+ els:[R(0,0,0,360,220,"water",1),
+ G(0,"150,30 175,25 185,60 180,140 170,190 155,195 148,150 145,80","land",1,{st:"line"}),
+ G(0,"195,120 260,110 280,150 255,200 200,200 190,165","land",1,{st:"line"}),
+ G(0,"200,40 300,30 330,70 320,105 265,105 195,112 190,70","land",1,{st:"line"}),
+ G(0,"120,4 200,4 205,22 170,20 140,24","land",1,{st:"line"}),
+ G(0,"15,20 120,30 135,90 130,170 100,205 20,205","land",1,{st:"line"}),
+ G(0,"150,30 175,25 185,60 180,140 170,190 155,195 148,150 145,80","cyan",.45,{d:.4}),P(0,165,112,"Algonquin ≈ Manhattan","cyan",{d:.6}),
+ G(1,"200,40 300,30 330,70 320,105 265,105 195,112 190,70","gold",.35),G(1,"195,120 260,110 280,150 255,200 200,200 190,165","orange",.35,{d:.3}),
+ P(1,262,68,"Dukes ≈ Queens","gold"),P(1,236,160,"Broker ≈ Brooklyn","orange",{d:.3}),
+ G(2,"120,4 200,4 205,22 170,20 140,24","violet",.5),P(2,250,14,"Bohan ≈ Bronx","violet"),
+ G(3,"15,20 120,30 135,90 130,170 100,205 20,205","green",.35),P(3,62,60,"Alderney","green"),T(3,62,80,"≈ New Jersey","tx",10,{b:1}),
+ C(4,160,208,6,"gold",1),E(4,160,204,"🗽",16),P(4,255,205,"Statue of Happiness","gold")],
+ info:{was:"Liberty City ist die Stadt aus GTA 1, GTA III, GTA IV und mehreren Ablegern – immer mit New York als Vorbild.",
+ so:"Hochhäuser, gelbe Taxis, Brücken über Flüsse, U-Bahn – und Stadtteile mit Namen, die an die echten erinnern.",
+ bed:"Rockstar überträgt echte Städte in eine überspitzte, satirische Version – erkennbar, aber nicht 1:1.",
+ tipp:"Die GTA-IV-Version gilt als besonders detailliert: viele Straßen und Gebäude sind echten Orten in New York nachempfunden."}},
+{id:"s2",a:"staedte",title:"Vice City",sub:"Neon, Strand und 80er-Jahre",
+ steps:["Vice City ist das Miami der GTA-Welt – eine Stadt am Meer mit Palmen und Sonne.",
+ "Auf der Insel im Osten liegt Ocean Beach – das Gegenstück zum berühmten South Beach in Miami.",
+ "Typisch sind Neonlichter und Häuser im Art-déco-Stil.",
+ "In Vice City (2002) spielt die Geschichte 1986 – sichtbar inspiriert von der Fernsehserie „Miami Vice“.",
+ "2026 kehrt die Reihe zurück: In GTA VI ist Vice City die große Stadt im Bundesstaat Leonida."],
+ els:[R(0,0,0,360,220,"water",1),G(0,"0,0 210,0 205,60 215,120 200,220 0,220","land",1,{st:"line"}),
+ G(0,"245,15 270,10 280,80 290,160 280,210 255,215 250,140 240,60","land",1,{st:"line"}),C(0,228,105,9,"land",1),C(0,226,135,6,"land",1),
+ P(0,105,30,"Vice City ≈ Miami","pink"),
+ G(1,"245,15 270,10 280,80 290,160 280,210 255,215 250,140 240,60","pink",.45),P(1,312,110,"Ocean Beach","pink"),T(1,312,128,"≈ South Beach","tx",9.5,{b:1}),
+ R(2,30,62,28,26,"panel2",1,{st:"pink",r:3}),R(2,66,56,24,32,"panel2",1,{st:"cyan",r:3,d:.2}),R(2,98,64,30,24,"panel2",1,{st:"violet",r:3,d:.4}),R(2,136,58,26,30,"panel2",1,{st:"pink",r:3,d:.6}),
+ P(2,105,108,"Neon & Art déco","cyan"),
+ P(3,105,142,"1986 · 80er-Jahre","orange"),T(3,105,160,"Vorbild: „Miami Vice“","tx",9.5,{b:1}),
+ P(4,105,195,"2026: zurück in GTA VI","green")],
+ info:{was:"Vice City ist eine fiktive Küstenstadt nach dem Vorbild Miamis – Schauplatz von Vice City (2002), Vice City Stories und GTA VI.",
+ so:"Strand, Palmen, Neonfarben in Pink und Türkis, Art-déco-Hotels und Musik der 80er-Jahre.",
+ bed:"Vice City zeigt, wie GTA eine ganze Epoche einfängt: Mode, Musik, Autos und Stimmung einer Zeit.",
+ tipp:"Die echten Art-déco-Hotels stehen in Miami Beach. Viele davon kann man in Vice City wiedererkennen."}},
+{id:"s3",a:"staedte",title:"San Andreas",sub:"Ein ganzer Bundesstaat",
+ steps:["San Andreas ist ein fiktiver Bundesstaat nach dem Vorbild von Kalifornien und Nevada.",
+ "Im Südosten liegt Los Santos – das Gegenstück zu Los Angeles. Hier beginnt die Geschichte.",
+ "Im Westen liegt San Fierro, angelehnt an San Francisco – mit Hügeln und großer Brücke.",
+ "Im Nordosten in der Wüste liegt Las Venturas, das Las Vegas der Spielwelt.",
+ "Dazwischen gibt es Wälder, Berge, Dörfer und Wüste – damals eine riesige Spielwelt."],
+ els:[R(0,0,0,360,220,"water",1),G(0,"40,30 160,20 300,25 330,120 300,210 120,205 60,150 30,90","land",1,{st:"line"}),P(0,180,112,"San Andreas","green",{e:2}),
+ C(1,250,170,30,"orange",.35),C(1,250,170,5,"orange",1),P(1,250,194,"Los Santos ≈ L.A.","orange"),
+ C(2,80,90,26,"blue",.35),C(2,80,90,5,"blue",1),P(2,92,124,"San Fierro ≈ San Francisco","blue"),
+ C(3,270,60,26,"gold",.35),C(3,270,60,5,"gold",1),P(3,270,30,"Las Venturas ≈ Las Vegas","gold"),
+ E(4,150,80,"🌲",16),E(4,175,95,"🌲",14,{d:.15}),E(4,140,165,"⛰️",18,{d:.3}),E(4,200,70,"🌵",14,{d:.45}),E(4,190,140,"🏘️",14,{d:.6}),P(4,160,142,"Land dazwischen","green",{d:.8})],
+ info:{was:"San Andreas ist der Schauplatz von GTA: San Andreas (2004). Später wurde der Name für GTA V wiederverwendet.",
+ so:"Drei Großstädte mit unterschiedlichem Charakter: Ghetto und Hollywood, Hügel und Nebel, Casinos und Wüste.",
+ bed:"Zum ersten Mal reiste man in GTA zwischen mehreren Städten durch echte Landschaft – ein großer Schritt für offene Welten.",
+ tipp:"In GTA V heißt der Bundesstaat wieder San Andreas – dort gibt es aber nur Los Santos und das Umland."}},
+{id:"s4",a:"staedte",title:"Los Santos in GTA V",sub:"Stadt, Land, Berg und Meer",
+ steps:["In GTA V liegt Los Santos im Süden einer großen Insel – wieder nach dem Vorbild von Los Angeles.",
+ "Im Norden liegt Blaine County: Land, Wüste, Kleinstädte und ein großer See.",
+ "Ganz im Nordwesten ragt der Mount Chiliad auf – der höchste Berg der Karte.",
+ "Vinewood mit seinem großen Schriftzug am Hügel entspricht Hollywood.",
+ "Die Karte von GTA V war bei Erscheinen die größte, die Rockstar bis dahin gebaut hatte."],
+ els:[R(0,0,0,360,220,"water",1),G(0,"60,15 290,15 320,80 300,150 330,205 70,205 40,120","land",1,{st:"line"}),
+ ...[0,1,2,3,4,5,6].map(i=>R(0,110+i*22,150,16,16,"blk",1,{d:.05*i})),...[0,1,2,3,4,5].map(i=>R(0,120+i*22,172,16,16,"blk",1,{d:.05*i+.2})),
+ P(0,190,196,"Los Santos ≈ Los Angeles","orange",{e:4}),
+ P(1,190,70,"Blaine County","green"),T(1,190,88,"Land · Wüste · See","tx",9.5,{b:1}),C(1,250,110,12,"water",1,{d:.3}),
+ G(2,"70,62 100,24 130,62","mut",.8),G(2,"92,34 100,24 108,34","white",.9),T(2,100,76,"Mount Chiliad","tx",9.5,{b:1}),
+ P(3,232,126,"Vinewood ≈ Hollywood","gold"),
+ P(4,180,209,"Größte Rockstar-Karte bis 2013","cyan")],
+ info:{was:"Los Santos ist der Schauplatz von GTA V und GTA Online – eine Großstadt plus weites Umland auf einer Insel.",
+ so:"Strände, Hochhäuser, Hügel mit Vinewood-Schriftzug, im Norden Wüste, Berge und Wald.",
+ bed:"Viele Spieler kennen Los Santos besser als jede andere GTA-Stadt, weil GTA Online dort seit 2013 läuft.",
+ tipp:"Die Karte ist so gebaut, dass man von der Stadt in wenigen Minuten aufs Land fahren kann – das macht sie abwechslungsreich."}},
+{id:"s5",a:"staedte",title:"Leonida in GTA VI",sub:"Das Florida der GTA-Welt",
+ steps:["GTA VI spielt im fiktiven Bundesstaat Leonida – dem Gegenstück zu Florida.",
+ "Im Südosten liegt Vice City, die größte Stadt von Leonida.",
+ "Im Süden zieht sich eine Inselkette ins Meer: die Leonida Keys, angelehnt an die Florida Keys.",
+ "Im Landesinneren liegen die Sümpfe von Grassrivers – angelehnt an die Everglades mit Alligatoren.",
+ "Dazu kommen weitere Gegenden wie Port Gellhorn, Ambrosia und der Nationalpark Mount Kalaga."],
+ els:[R(0,0,0,360,220,"water",1),
+ G(0,"20,25 230,22 240,45 265,75 285,115 300,150 296,185 280,205 262,200 250,175 230,140 215,105 205,80 185,68 140,62 90,60 50,58 20,55","land",1,{st:"line"}),
+ P(0,110,105,"Leonida ≈ Florida","cyan"),
+ C(1,288,182,7,"pink",1),RING(1,288,182,18,"pink"),P(1,312,154,"Vice City","pink"),
+ C(2,240,212,4,"land",1),C(2,254,213,4,"land",1,{d:.1}),C(2,267,211,4,"land",1,{d:.2}),C(2,280,208,4,"land",1,{d:.3}),P(2,186,205,"Leonida Keys","cyan"),
+ C(3,248,140,16,"green",.4),P(3,226,118,"Grassrivers ≈ Everglades","green"),E(3,252,146,"🐊",13),
+ C(4,40,42,4,"orange",1),P(4,62,58,"Port Gellhorn","orange",{d:.1}),C(4,160,42,4,"gold",1,{d:.3}),P(4,170,58,"Ambrosia","gold",{d:.4}),E(4,240,40,"⛰️",14,{d:.6}),P(4,262,22,"Mount Kalaga","green",{d:.7})],
+ info:{was:"Leonida ist der Schauplatz von GTA VI – ein ganzer Bundesstaat mit Großstadt, Inseln, Sümpfen und Hinterland.",
+ so:"Vice City im Südosten, die Inselkette im Süden, Sümpfe im Inneren und ländliche Regionen im Norden.",
+ bed:"Wie bei San Andreas reist man wieder durch einen ganzen Bundesstaat – diesmal mit der Satire auf das heutige Florida.",
+ tipp:"Viele Ortsnamen spielen mit echten Vorbildern: Leonida Keys ↔ Florida Keys, Grassrivers ↔ Everglades."}},
+/* ===== SPIELMECHANIK ===== */
+{id:"m1",a:"spiel",title:"Offene Welt (Open World)",sub:"Das Sandbox-Prinzip",
+ steps:["In GTA steuerst du eine Spielfigur in einer großen Welt – ohne Ladebildschirme zwischen den Stadtteilen.",
+ "Straßen, Wege und Wasserwege verbinden alles. Du kannst jeden Ort erreichen, den du siehst.",
+ "Auf der Karte findest du Missionen. Sie bringen die Geschichte voran.",
+ "Dazu gibt es freiwillige Aktivitäten: Rennen, Sport, Minispiele, Erkunden.",
+ "Das ist das „Sandbox“-Prinzip: Wie im Sandkasten entscheidest du selbst, was du wann machst."],
+ els:[R(0,10,10,340,200,"land",1,{r:16}),C(0,180,110,7,"pink",1),RING(0,180,110,22,"pink"),P(0,180,88,"DU","pink"),
+ PATH(1,"M10,110 L350,110 M180,10 L180,210 M40,10 Q90,110 40,210 M250,10 Q300,60 350,60 M180,160 L330,190","road",{w:7}),
+ C(2,70,50,9,"gold",1),T(2,70,54,"!","ink",11,{b:1}),C(2,300,160,9,"gold",1,{d:.3}),T(2,300,164,"!","ink",11,{b:1,d:.3}),C(2,120,180,9,"gold",1,{d:.6}),T(2,120,184,"!","ink",11,{b:1,d:.6}),
+ E(3,280,40,"🏁",18),E(3,320,95,"⛳",16,{d:.2}),E(3,60,140,"🎳",16,{d:.4}),E(3,230,190,"🚤",16,{d:.6}),
+ PATH(4,"M180,110 Q240,140 300,160 Q230,200 120,180 Q40,140 70,50","green",{w:2.5,dash:"5 5"}),P(4,180,22,"Du entscheidest die Reihenfolge","green")],
+ info:{was:"Open World heißt: eine große, zusammenhängende Spielwelt, in der du dich frei bewegen kannst.",
+ so:"Du siehst ein Ziel am Horizont – und kannst einfach hinfahren. Missionen sind Angebote, keine Pflicht-Reihenfolge.",
+ bed:"Dieses Prinzip macht GTA so beliebt: Jeder Spieler erlebt die Welt etwas anders.",
+ tipp:"„Sandbox“ kommt vom englischen Wort für Sandkasten – man darf spielen, wie man möchte."}},
+{id:"m2",a:"spiel",title:"Fahndungslevel – die Sterne",sub:"Wie die Polizei reagiert",
+ steps:["Wer im Spiel gegen Gesetze verstößt, bekommt Fahndungssterne. 1 Stern: Streifenwagen suchen dich.",
+ "Bei 2 bis 3 Sternen kommen mehr Polizisten, Straßensperren und Hubschrauber dazu.",
+ "Bei 4 bis 5 Sternen rücken Spezialeinheiten an – die Lage wird sehr gefährlich.",
+ "In GTA IV und GTA V gibt es einen Suchbereich auf der Karte. Wer ihn verlässt und nicht gesehen wird …",
+ "… lässt die Sterne blinken – bis sie verschwinden. Die Fahndung ist vorbei."],
+ els:[...[0,1,2,3,4].map(i=>ST(0,100+i*40,36,15,"gold",0)),
+ ST(0,100,36,15,"gold",1,{e:4}),P(0,180,72,"1 Stern: Streife","blue",{e:1}),
+ ST(1,140,36,15,"gold",1,{e:4}),ST(1,180,36,15,"gold",1,{d:.4,e:4}),P(1,180,72,"Sperren & Hubschrauber","orange",{e:2}),
+ ST(2,220,36,15,"gold",1,{e:4}),ST(2,260,36,15,"gold",1,{d:.4,e:4}),P(2,180,72,"Spezialeinheit","red",{e:3}),
+ R(3,20,92,320,120,"land",1,{r:12}),C(3,150,152,48,"red",.15,{st:"red"}),T(3,150,100,"Suchbereich","red",9,{b:1}),
+ CAR(3,[[150,160],[220,175],[300,190]],"pink",3.2,{sc:.5,d:.5}),
+ ...[0,1,2,3,4].map(i=>ST(4,100+i*40,36,15,"gold",1,{blink:1,e2:3})),P(4,280,120,"Fahndung vorbei ✓","green",{d:2.5})],
+ info:{was:"Das Fahndungslevel zeigt mit Sternen, wie stark dich die Polizei im Spiel sucht.",
+ so:"Oben rechts im Bild leuchten Sterne. Je mehr Sterne, desto mehr und stärkere Einsatzkräfte.",
+ bed:"Das System sorgt für Spannung: Jede Handlung hat Folgen, und Flucht ist ein eigenes Spielelement.",
+ tipp:"Rechnen: 3 von 5 Sternen sind 60 % des höchsten Fahndungslevels."}},
+{id:"m3",a:"spiel",title:"Missionen",sub:"So ist ein Auftrag aufgebaut",
+ steps:["Eine Mission beginnt meist bei einem Auftraggeber. Auf der Karte ist er mit einem Buchstaben oder Symbol markiert.",
+ "Danach zeigt ein Zielmarker, wohin du musst.",
+ "Das Navi (GPS) zeichnet die Route auf der Karte ein – du folgst der Linie.",
+ "Am Ziel erfüllst du die Aufgabe. Checkpoints speichern den Fortschritt.",
+ "Zum Schluss gibt es Geld, und oft werden neue Missionen oder Orte freigeschaltet."],
+ els:[R(0,10,10,340,200,"land",1,{r:16}),PATH(0,"M10,60 L350,60 M10,160 L350,160 M90,10 L90,210 M220,10 L220,210","road",{w:8}),
+ C(0,60,60,14,"blue",1),T(0,60,65,"A","white",13,{b:1}),P(0,60,90,"Auftraggeber","blue"),
+ C(1,290,160,13,"gold",.35),RING(1,290,160,18,"gold"),P(1,290,132,"Ziel","gold"),
+ PATH(2,"M60,60 L90,60 L90,160 L220,160 L290,160","violet",{w:4}),CAR(2,[[60,60],[90,60],[90,160],[220,160],[290,160]],"pink",3.5,{sc:.4,d:.6}),
+ C(3,290,160,13,"green",1),T(3,290,165,"✓","white",14,{b:1}),P(3,250,190,"Checkpoint geschafft","green"),
+ P(4,180,110,"+ $ Belohnung","gold"),P(4,180,134,"Neue Mission frei","cyan",{d:.4})],
+ info:{was:"Missionen sind die Aufträge, aus denen die Geschichte eines GTA-Spiels besteht.",
+ so:"Symbol auf der Karte → Filmszene → Aufgabe mit Zielmarker und GPS-Route → Belohnung.",
+ bed:"Hauptmissionen erzählen die Geschichte, Nebenmissionen bieten Abwechslung und Extras.",
+ tipp:"Wer zwischendurch Nebenmissionen macht, lernt die Stadt besser kennen."}},
+{id:"m4",a:"spiel",title:"Fahrzeuge",sub:"Autos, Boote, Flugzeuge",
+ steps:["Fahrzeuge sind das Herz von GTA: Autos, Motorräder, Boote, Flugzeuge und Hubschrauber.",
+ "Jedes Fahrzeug hat eigene Werte: Höchstgeschwindigkeit, Beschleunigung, Bremsen und Handling.",
+ "Die Marken sind erfunden, aber an echte Vorbilder angelehnt – so braucht Rockstar keine Lizenzen der Autohersteller.",
+ "Ein Schadensmodell sorgt dafür, dass Autos bei Unfällen Beulen bekommen und kaputtgehen können.",
+ "In Werkstätten kann man Fahrzeuge reparieren, umlackieren und tunen."],
+ els:[E(0,60,52,"🚗",28),E(0,120,52,"🏍️",28,{d:.15}),E(0,180,52,"🚤",28,{d:.3}),E(0,240,52,"✈️",28,{d:.45}),E(0,300,52,"🚁",28,{d:.6}),
+ T(1,128,99,"Tempo","mut",9.5,{an:"end",e:3}),HB(1,136,91,190,10,"green",{e:3}),T(1,128,119,"Beschleunigung","mut",9.5,{an:"end",e:3}),HB(1,136,111,150,10,"cyan",{d:.2,e:3}),
+ T(1,128,139,"Bremsen","mut",9.5,{an:"end",e:3}),HB(1,136,131,120,10,"gold",{d:.4,e:3}),T(1,128,159,"Handling","mut",9.5,{an:"end",e:3}),HB(1,136,151,165,10,"violet",{d:.6,e:3}),
+ P(2,180,192,"Fiktive Marken · echte Vorbilder","orange",{e:3}),
+ {t:"carx",s:3,x:120,y:150,c:"blue",dmg:1,e:4},E(3,160,135,"💥",22,{e:4}),P(3,120,192,"Schadensmodell","red",{e:4}),
+ {t:"carx",s:4,x:120,y:150,c:"green"},E(4,190,140,"🔧",26,{d:.3}),P(4,250,150,"Werkstatt & Tuning","green",{d:.5})],
+ info:{was:"In GTA kann man fast jedes Fahrzeug benutzen, das man sieht – vom Fahrrad bis zum Düsenjet.",
+ so:"Jede Fahrzeugklasse fährt sich anders: Sportwagen sind schnell, Geländewagen robust, Motorräder wendig.",
+ bed:"Fahren ist die häufigste Tätigkeit im Spiel – deshalb steckt viel Arbeit in Fahrphysik und Sound.",
+ tipp:"Beim Namen der Reihe steckt es schon drin: „Grand Theft Auto“ ist ein Begriff aus dem US-Recht für schweren Autodiebstahl."}},
+{id:"m5",a:"spiel",title:"Radio & Musik",sub:"Sender, Werbung und Lizenzen",
+ steps:["Sobald du in ein Auto steigst, läuft Radio – wie im echten Leben.",
+ "Es gibt viele Sender mit unterschiedlicher Musik: Rock, Hip-Hop, Pop, Elektro und mehr.",
+ "Zwischen den Liedern laufen erfundene Werbespots und Talkshows – voller Satire.",
+ "Die Musik ist echt: Rockstar kauft dafür Lizenzen bei Künstlern und Plattenfirmen.",
+ "Lizenzen laufen manchmal aus. Darum fehlen in späteren Neuauflagen einzelne Lieder."],
+ els:[R(0,40,24,280,92,"panel2",1,{r:14,st:"line"}),T(0,62,46,"RADIO","mut",10,{b:1,m:1,an:"start"}),
+ ...Array.from({length:21},(_,i)=>Ln(0,70+i*11,i%5===0?78:84,70+i*11,96,"mut",{d:.02*i})),
+ {t:"needle",s:1,x0:80,x1:280,y1:66,y2:104,c:"red",dur:4},
+ T(1,92,70,"Rock","tx",9,{b:1}),T(1,148,70,"Hip-Hop","tx",9,{b:1,d:.6}),T(1,210,70,"Pop","tx",9,{b:1,d:1.2}),T(1,268,70,"Talk","tx",9,{b:1,d:1.8}),
+ E(0,180,160,"🚗",34),
+ G(2,"40,140 150,140 150,180 70,180 58,192 60,180 40,180","panel2",1,{st:"orange"}),T(2,95,158,"„Kauf jetzt!“","orange",10,{b:1}),T(2,95,172,"Satire-Werbung","mut",8.5),
+ E(3,270,150,"🎵",24),P(3,262,186,"echte Musik · Lizenz","cyan",{e:4}),
+ E(4,300,150,"🚫",20),P(4,262,186,"Lizenz weg → Lied fehlt","red")],
+ info:{was:"Die Radiosender sind ein Markenzeichen von GTA. Jeder Teil hat eigene Sender mit Moderatoren.",
+ so:"Im Auto wechselt man die Sender per Taste. Zwischen Liedern laufen erfundene Werbung und Nachrichten.",
+ bed:"Musik transportiert Zeitgefühl: Vice City klingt nach den 80ern, San Andreas nach den frühen 90ern.",
+ tipp:"Viele Spieler lassen das Radio einfach laufen und entdecken so neue Lieblingslieder."}},
+/* ===== TECHNIK ===== */
+{id:"t1",a:"technik",title:"Rockstar Games",sub:"Wer hinter GTA steckt",
+ steps:["Ganz oben steht Take-Two Interactive – der Konzern, dem Rockstar Games gehört.",
+ "Rockstar Games wurde 1998 in New York gegründet, unter anderem von den Brüdern Sam und Dan Houser.",
+ "Rockstar North in Edinburgh – früher DMA Design – ist das Hauptstudio hinter GTA.",
+ "Dazu kommen weitere Studios auf der ganzen Welt, etwa in San Diego, Toronto, Leeds, Lincoln, Dundee und Indien.",
+ "Große Teile wie GTA VI entstehen als Teamarbeit vieler Studios gleichzeitig."],
+ els:[R(0,110,12,140,30,"panel2",1,{r:10,st:"violet"}),T(0,180,32,"Take-Two Interactive","tx",11,{b:1}),
+ Ln(1,180,42,180,62,"mut"),R(1,100,62,160,40,"violet",.2,{r:10,st:"violet"}),T(1,180,80,"Rockstar Games","tx",12,{b:1,m:1}),T(1,180,95,"New York · 1998 · Sam & Dan Houser","mut",8),
+ Ln(2,180,102,80,128,"mut"),R(2,20,128,120,40,"gold",.18,{r:10,st:"gold"}),T(2,80,146,"Rockstar North","tx",11,{b:1}),T(2,80,160,"Edinburgh · ex DMA Design","mut",8),
+ Ln(3,180,102,270,128,"mut"),R(3,200,128,145,40,"panel2",1,{r:10,st:"line"}),T(3,272,146,"weitere Studios","tx",11,{b:1}),T(3,272,160,"San Diego · Toronto · Leeds · …","mut",8),
+ P(4,180,196,"GTA VI = Teamarbeit vieler Studios","green"),RING(4,180,100,90,"violet")],
+ info:{was:"Rockstar Games ist der Entwickler und Herausgeber von GTA, ein Tochterunternehmen von Take-Two Interactive.",
+ so:"Auf jeder GTA-Packung steht das „R*“-Zeichen von Rockstar. Entwickelt wird vor allem bei Rockstar North in Schottland.",
+ bed:"Ein GTA entsteht über viele Jahre mit Tausenden Beteiligten – vergleichbar mit großen Kinofilmen.",
+ tipp:"Rockstar hat auch andere bekannte Spiele gemacht, zum Beispiel Red Dead Redemption."}},
+{id:"t2",a:"technik",title:"Die Engine: RenderWare & RAGE",sub:"Der Motor unter der Haube",
+ steps:["Eine Engine ist das technische Grundgerüst eines Spiels: Grafik, Physik, Sound, Steuerung.",
+ "GTA III, Vice City und San Andreas liefen mit RenderWare – einer zugekauften Engine.",
+ "Ab GTA IV nutzt Rockstar die eigene RAGE-Engine (Rockstar Advanced Game Engine).",
+ "Dazu kommt Euphoria: Figuren reagieren physikalisch, stolpern, fangen sich ab – statt immer gleiche Animationen abzuspielen.",
+ "Für GTA VI wurde RAGE stark weiterentwickelt – zum Beispiel für Licht, Wasser und viele Menschen auf den Straßen."],
+ els:[R(0,20,14,320,28,"panel2",1,{r:10,st:"line"}),T(0,180,32,"Engine = Grafik · Physik · Sound · Steuerung","tx",10,{b:1}),
+ R(1,20,58,140,50,"blue",.18,{r:12,st:"blue"}),T(1,90,80,"RenderWare","tx",12,{b:1,m:1}),T(1,90,96,"GTA III – San Andreas","mut",8.5),
+ A(2,165,83,195,83,"gold"),R(2,200,58,140,50,"violet",.2,{r:12,st:"violet"}),T(2,270,80,"RAGE","tx",14,{b:1,m:1}),T(2,270,96,"ab GTA IV (2008)","mut",8.5),
+ C(3,80,140,7,"tx",1),Ln(3,80,147,80,175,"tx",{w:3}),Ln(3,80,155,64,166,"tx",{w:3}),Ln(3,80,155,98,148,"tx",{w:3}),Ln(3,80,175,68,198,"tx",{w:3}),Ln(3,80,175,96,195,"tx",{w:3}),
+ A(3,110,170,140,170,"pink",{d:.4}),T(3,175,166,"Euphoria:","pink",10,{b:1,d:.6}),T(3,175,180,"echte Reaktion","mut",9,{d:.6}),
+ P(4,268,192,"GTA VI: RAGE ausgebaut","green"),E(4,240,156,"💡",16,{d:.3}),E(4,270,156,"🌊",16,{d:.5}),E(4,300,156,"👥",16,{d:.7})],
+ info:{was:"Die Engine ist die Software-Grundlage, auf der ein Spiel gebaut wird – wie ein Motor, in den man verschiedene Karosserien setzt.",
+ so:"RenderWare (bis 2004), danach Rockstars eigene RAGE-Engine plus Euphoria für Körperbewegungen.",
+ bed:"Eine eigene Engine gibt Rockstar volle Kontrolle – darum wirken ihre Welten so aus einem Guss.",
+ tipp:"RAGE steckt auch in Red Dead Redemption 2 – darum fühlen sich beide Spiele technisch verwandt an."}},
+{id:"t3",a:"technik",title:"Streaming & Detailstufen",sub:"Wie eine riesige Welt in den Speicher passt",
+ steps:["Die ganze Welt passt nicht auf einmal in den Arbeitsspeicher der Konsole. Deshalb wird nur geladen, was um dich herum ist.",
+ "Ganz nah: volle Details – Fenster, Schilder, Menschen, Mülleimer.",
+ "Weiter weg: vereinfachte Modelle mit weniger Ecken und Kanten.",
+ "Ganz weit weg: nur grobe Umrisse und Lichter. Diese Technik heißt LOD (Level of Detail).",
+ "Wenn du fährst, wandert der Kreis mit: Vorne wird nachgeladen, hinten wird Speicher frei gemacht – das nennt man Streaming."],
+ els:[R(0,0,0,360,220,"land",.6),...[[40,30],[300,40],[60,170],[290,180],[120,40],[240,30],[30,100],[320,110],[180,190],[110,190]].map((p,i)=>R(0,p[0]-9,p[1]-9,18,18,"blk",1,{st:"line",d:.03*i})),
+ C(0,180,110,7,"pink",1),P(0,180,92,"DU","pink"),
+ C(1,180,110,38,"green",.18,{st:"green"}),T(1,180,136,"volle Details","green",9,{b:1}),
+ C(2,180,110,78,"gold",.08,{st:"gold"}),T(2,180,178,"vereinfacht","gold",9,{b:1}),
+ C(3,180,110,118,"red",.05,{st:"red"}),T(3,180,214,"grob (LOD)","red",9,{b:1}),
+ CAR(4,[[180,118],[330,118]],"pink",4,{sc:.4}),P(4,280,20,"Streaming: nachladen","cyan")],
+ info:{was:"Streaming bedeutet: Die Welt wird stückweise von der Festplatte in den Speicher geladen, während du spielst.",
+ so:"Wenn du schnell fliegst, siehst du manchmal, wie Details „aufploppen“ – das ist LOD-Wechsel in Aktion.",
+ bed:"Nur so sind riesige Welten ohne Ladebildschirme möglich.",
+ tipp:"Moderne Konsolen mit schnellen SSD-Speichern können viel mehr gleichzeitig nachladen als ältere Geräte."}},
+{id:"t4",a:"technik",title:"Motion-Capture & Sprecher",sub:"Echte Schauspieler im Spiel",
+ steps:["Die Figuren in GTA werden von echten Schauspielern gespielt.",
+ "Sie tragen einen Anzug mit vielen kleinen Markierungspunkten.",
+ "Zahlreiche Kameras im Studio filmen die Punkte von allen Seiten gleichzeitig.",
+ "Der Computer überträgt die Bewegung auf das 3D-Modell im Spiel.",
+ "Stimme und Gesicht werden ebenfalls aufgenommen – so entstehen glaubwürdige Filmszenen."],
+ els:[C(0,110,60,13,"tx",1),Ln(0,110,73,110,135,"tx",{w:5}),Ln(0,110,88,82,115,"tx",{w:4}),Ln(0,110,88,140,112,"tx",{w:4}),Ln(0,110,135,92,185,"tx",{w:4}),Ln(0,110,135,128,185,"tx",{w:4}),
+ ...[[110,60],[110,88],[82,115],[140,112],[110,135],[92,185],[128,185],[110,110]].map((p,i)=>C(1,p[0],p[1],3.5,"cyan",1,{d:.08*i,st:"white"})),
+ E(2,30,30,"🎥",20),E(2,190,30,"🎥",20,{d:.2}),E(2,30,195,"🎥",20,{d:.4}),E(2,190,195,"🎥",20,{d:.6}),
+ Ln(2,40,36,82,115,"cyan",{dash:"3 4",d:.8}),Ln(2,180,36,140,112,"cyan",{dash:"3 4",d:.8}),Ln(2,40,190,92,185,"cyan",{dash:"3 4",d:.8}),Ln(2,180,190,128,185,"cyan",{dash:"3 4",d:.8}),
+ A(3,210,110,240,110,"gold"),...box3d(3,262,190,30,45,10,"violet",.2),...box3d(3,266,145,22,50,8,"violet",.4),C(3,282,72,12,"violet",.8,{d:.6}),
+ E(4,320,60,"🎙️",22),P(4,268,24,"Stimme & Gesicht","pink")],
+ info:{was:"Motion-Capture (Bewegungserfassung) überträgt echte menschliche Bewegungen auf Spielfiguren.",
+ so:"Schauspieler im Anzug mit Leuchtpunkten, ringsum Kameras – danach bewegt sich die Spielfigur genauso.",
+ bed:"Dadurch wirken Gang, Gestik und Mimik natürlich – ein wichtiger Grund für die filmreife Erzählung.",
+ tipp:"Die Hauptfiguren werden oft von Schauspielern gespielt, die Stimme UND Körper liefern."}},
+{id:"t5",a:"technik",title:"Zahlen & Rekorde",sub:"Verkäufe und ein bisschen Mathe",
+ steps:["GTA ist eine der erfolgreichsten Spielereihen der Welt. Schauen wir uns die Zahlen an.",
+ "GTA V hat laut Take-Two über 230 Millionen Exemplare verkauft (Stand 2026).",
+ "Nur Minecraft hat mit rund 350 Millionen noch mehr verkauft.",
+ "Rekord zum Start 2013: 1 Milliarde US-Dollar Umsatz in nur 3 Tagen.",
+ "Rechnen: 230 Millionen Exemplare in 13 Jahren sind im Schnitt etwa 17,7 Millionen pro Jahr."],
+ els:[Ln(0,90,30,90,150,"mut",{w:2}),Ln(0,90,150,340,150,"mut",{w:2}),T(0,215,166,"Millionen verkaufte Exemplare","mut",9),
+ T(1,84,63,"GTA V","tx",10,{b:1,an:"end"}),HB(1,92,50,164,22,"green"),T(1,262,65,"230+","green",11,{b:1,m:1,an:"start"}),
+ T(2,84,113,"Minecraft","tx",10,{b:1,an:"end"}),HB(2,92,100,246,22,"blue"),T(2,300,95,"≈ 350","blue",11,{b:1,m:1}),
+ E(3,40,195,"💰",22),T(3,130,200,"1 Mrd. $ in 3 Tagen","gold",13,{b:1,m:1,e:4}),
+ T(4,198,200,"230 Mio. ÷ 13 Jahre ≈ 17,7 Mio./Jahr","tx",11,{b:1,m:1}),E(4,40,195,"🧮",22)],
+ info:{was:"Verkaufszahlen werden von Take-Two in den Quartalsberichten veröffentlicht.",
+ so:"„Verkauft“ meint hier ausgelieferte Exemplare – über PS3, PS4, PS5, Xbox-Konsolen und PC zusammen.",
+ bed:"Die Einnahmen von GTA V und GTA Online haben die jahrelange Entwicklung von GTA VI mitfinanziert.",
+ tipp:"Zahlen ändern sich ständig – bei Rekorden lohnt sich immer ein Blick aufs Datum der Quelle."}},
+/* ===== JUGENDSCHUTZ ===== */
+{id:"j1",a:"jugend",title:"USK & Altersfreigabe",sub:"Warum GTA „ab 18“ ist",
+ steps:["In Deutschland prüft die USK (Unterhaltungssoftware Selbstkontrolle) Spiele. Es gibt fünf Alterskennzeichen.",
+ "Das rote Zeichen bedeutet „Keine Jugendfreigabe“ – das Spiel ist nur für Erwachsene.",
+ "GTA IV, GTA V und auch GTA VI haben in Deutschland USK 18.",
+ "In anderen Ländern ähnlich: In Europa PEGI 18, in den USA „Mature 17+“ (ESRB).",
+ "Gründe der USK bei GTA VI: drastische Gewalt, häufiger Drogenkonsum und eine unkritische Darstellung krimineller Gruppen."],
+ els:[...[["0","white","ink"],["6","gold","ink"],["12","green","white"],["16","blue","white"],["18","red","white"]].map((u,i)=>[R(0,32+i*62,40,50,50,u[1],1,{r:10,d:.1*i,st:"line"}),T(0,57+i*62,72,u[0],u[2],20,{b:1,m:1,d:.1*i}),T(0,57+i*62,104,"USK","mut",8,{b:1,d:.1*i})]).flat(),
+ RING(1,305,65,34,"red"),P(1,180,128,"Keine Jugendfreigabe","red"),
+ P(2,180,154,"GTA IV · GTA V · GTA VI = USK 18","red",{e:4}),
+ P(3,110,180,"PEGI 18","orange",{e:4}),P(3,250,180,"ESRB: Mature 17+","violet",{e:4}),
+ T(4,180,158,"Gewalt · Drogen · kriminelle Rollenbilder","tx",11,{b:1}),T(4,180,178,"→ nur für Erwachsene","mut",10)],
+ info:{was:"Die USK vergibt in Deutschland gesetzlich verbindliche Alterskennzeichen für Spiele: 0, 6, 12, 16 und 18.",
+ so:"Das farbige Feld auf der Packung oder im Store: weiß 0, gelb 6, grün 12, blau 16, rot 18.",
+ bed:"Ein Spiel mit USK 18 darf an Kinder und Jugendliche nicht verkauft werden – auch nicht digital.",
+ tipp:"Die USK-Freigabe ist keine Empfehlung, sondern eine Schutzgrenze. Ob ein Spiel geeignet ist, sagt sie nur nach unten hin."}},
+{id:"j2",a:"jugend",title:"Satire – der Zerrspiegel",sub:"Was GTA über unsere Welt sagt",
+ steps:["GTA ist voller Satire: Die Spielwelt hält der echten Welt einen Zerrspiegel vor.",
+ "Getränke: Aus Coca-Cola wird „eCola“.",
+ "Aus Sprite wird „Sprunk“.",
+ "Soziale Netzwerke: Facebook heißt in GTA V „Lifeinvader“ – „Lebens-Eindringling“.",
+ "Durch Übertreibung werden Werbung, Konsum und Medien kritisiert – nicht verherrlicht."],
+ els:[T(0,85,30,"ECHTE WELT","blue",11,{b:1,m:1}),T(0,275,30,"GTA-WELT","pink",11,{b:1,m:1}),Ln(0,180,18,180,170,"line",{w:2}),E(0,40,195,"🪞",22),
+ P(1,85,62,"Coca-Cola","blue"),A(1,140,62,220,62,"gold",{d:.3}),P(1,275,62,"eCola","pink",{d:.6}),
+ P(2,85,96,"Sprite","blue"),A(2,140,96,220,96,"gold",{d:.3}),P(2,275,96,"Sprunk","pink",{d:.6}),
+ P(3,85,130,"Facebook","blue"),A(3,140,130,220,130,"gold",{d:.3}),P(3,275,130,"Lifeinvader","pink",{d:.6}),
+ P(4,270,195,"Übertreibung = Kritik","gold"),P(4,85,164,"Hollywood","blue",{d:.3}),P(4,275,164,"Vinewood","pink",{d:.5})],
+ info:{was:"Satire ist eine Kunstform, die durch Übertreibung und Spott Missstände sichtbar macht.",
+ so:"Erfundene Marken mit schrägen Namen, übertriebene Werbespots im Radio, Politiker-Parodien.",
+ bed:"Wer die Satire erkennt, versteht GTA als Kommentar zur amerikanischen Gesellschaft – nicht als Anleitung.",
+ tipp:"Achte im Spiel einmal bewusst auf Plakate und Radiowerbung – fast alles ist eine Anspielung."}},
+{id:"j3",a:"jugend",title:"Kontroversen",sub:"Streit um GTA – ein Überblick",
+ steps:["GTA sorgt seit dem ersten Teil für Diskussionen – schon 1997 wurde in Großbritannien über ein Verbot debattiert.",
+ "2005 der „Hot Coffee“-Skandal: In San Andreas wurden versteckte, nicht jugendfreie Inhalte per Mod entdeckt.",
+ "Folge in den USA: Das Spiel wurde auf „Adults Only“ hochgestuft, Händler nahmen es aus den Regalen, Rockstar brachte eine bereinigte Fassung.",
+ "In den 2000ern gab es Klagen und politische Debatten über Gewalt in Spielen.",
+ "Bis heute wird über GTA diskutiert – das gehört zu Kunst, die provoziert."],
+ els:[Ln(0,50,20,50,200,"line",{w:3}),
+ C(0,50,34,7,"red",1),T(0,66,30,"1997","red",11,{b:1,m:1,an:"start"}),T(0,66,45,"Großbritannien: Verbots-Debatte","tx",10,{an:"start"}),
+ C(1,50,74,7,"orange",1),T(1,66,70,"2005","orange",11,{b:1,m:1,an:"start"}),T(1,66,85,"„Hot Coffee“: versteckte Inhalte","tx",10,{an:"start"}),
+ C(2,50,114,7,"orange",1),T(2,66,110,"2005","orange",11,{b:1,m:1,an:"start"}),T(2,66,125,"USA: „Adults Only“, Neuauflage","tx",10,{an:"start"}),
+ C(3,50,154,7,"violet",1),T(3,66,150,"2000er","violet",11,{b:1,m:1,an:"start"}),T(3,66,165,"Klagen & Politik-Debatten","tx",10,{an:"start"}),
+ C(4,50,194,7,"green",1),T(4,66,190,"heute","green",11,{b:1,m:1,an:"start"}),T(4,66,205,"Diskussion geht weiter","tx",10,{an:"start"})],
+ info:{was:"Kaum eine Spielereihe wurde so oft öffentlich kritisiert wie GTA.",
+ so:"Schlagzeilen, Altersstufen-Änderungen, Gerichtsverfahren und Debatten in Parlamenten.",
+ bed:"Die Kontroversen haben Altersfreigaben und Jugendschutz für Spiele weltweit mitgeprägt.",
+ tipp:"Bei Nachrichten über „Killerspiele“ lohnt sich ein Blick, was die Forschung wirklich sagt – siehe nächste Lektion."}},
+{id:"j4",a:"jugend",title:"Was sagt die Forschung?",sub:"Spiele und Gewalt",
+ steps:["Die große Frage: Machen gewalthaltige Spiele Menschen gewalttätig?",
+ "Kurzfristig lässt sich nach dem Spielen etwas mehr Erregung und Ärger messen – ähnlich wie nach einem spannenden Film.",
+ "Für echte Gewalttaten gibt es laut US-Psychologenverband APA (2020) keinen ausreichenden Beleg, dass Spiele die Ursache sind.",
+ "Trotzdem: Inhalte können Kinder ängstigen oder belasten. Darum sind Altersgrenzen sinnvoll.",
+ "Am besten hilft Reden: gemeinsam einordnen, was Spiel ist und was echte Welt."],
+ els:[P(0,180,20,"Machen Spiele gewalttätig?","violet"),
+ Ln(0,180,48,180,170,"mut",{w:4}),G(0,"165,180 195,180 180,166","mut",1),Ln(0,80,70,280,70,"mut",{w:4}),
+ Ln(1,90,70,70,110,"blue"),Ln(1,90,70,110,110,"blue"),PATH(1,"M60,110 L120,110 Q90,128 60,110","blue",{w:2.5}),T(1,90,140,"kurzfristig:","blue",9.5,{b:1}),T(1,90,154,"mehr Erregung","tx",9.5),
+ Ln(2,270,70,250,110,"green"),Ln(2,270,70,290,110,"green"),PATH(2,"M240,110 L300,110 Q270,128 240,110","green",{w:2.5}),T(2,270,140,"echte Gewalt:","green",9.5,{b:1}),T(2,270,154,"kein Beleg (APA 2020)","tx",9.5),
+ P(3,180,192,"Inhalte können belasten → Altersgrenze","red",{e:4}),
+ P(4,180,192,"Reden & gemeinsam einordnen","gold")],
+ info:{was:"Seit Jahrzehnten untersucht die Forschung, wie gewalthaltige Spiele wirken.",
+ so:"Unterschieden wird zwischen kurzfristigen Reaktionen (Aufregung) und langfristigem, echtem Verhalten.",
+ bed:"Spiele allein machen niemanden zum Täter – aber Alter, Dauer und Begleitung spielen eine Rolle.",
+ tipp:"Für Eltern: Interesse zeigen und mitschauen bringt mehr als reine Verbote."}},
+{id:"j5",a:"jugend",title:"Gesund & sicher spielen",sub:"Zeit, Geld und Einstellungen",
+ steps:["Spielen macht Spaß – mit ein paar Regeln bleibt es gesund.",
+ "Regelmäßige Pausen schonen Augen, Rücken und Kopf.",
+ "Vorsicht bei Echtgeld: In GTA Online kann man Spielgeld mit echtem Geld kaufen. Käufe lassen sich sperren.",
+ "PS5 und Xbox haben Jugendschutz-Einstellungen: Altersgrenzen, Spielzeit und Ausgaben-Limits.",
+ "Rechnen: 2 Stunden am Tag × 7 Tage = 14 Stunden pro Woche. Lieber vorher gemeinsam festlegen!"],
+ els:[C(0,80,90,52,"panel2",1,{st:"line"}),...Array.from({length:12},(_,i)=>{const a=i/12*Math.PI*2;return Ln(0,80+Math.sin(a)*44,90-Math.cos(a)*44,80+Math.sin(a)*50,90-Math.cos(a)*50,"mut",{w:2})}),
+ {t:"hand",s:0,x:80,y:90,r:40,c:"pink"},C(0,80,90,4,"pink",1),
+ P(1,250,40,"⏸ Pausen machen","green"),
+ P(2,250,80,"💳 Echtgeld-Käufe sperren","orange"),
+ P(3,250,120,"🎮 Jugendschutz an Konsole","blue"),
+ T(4,180,180,"2 h × 7 Tage = 14 h / Woche","tx",14,{b:1,m:1}),P(4,180,206,"gemeinsam Regeln festlegen","gold")],
+ info:{was:"Gesund spielen heißt: Spielzeit, Geld und Inhalte im Blick behalten.",
+ so:"Feste Spielzeiten, Pausen, Kaufsperren und die Familien-Einstellungen von PlayStation und Xbox.",
+ bed:"So bleibt Spielen ein Hobby unter vielen – und es gibt keine bösen Überraschungen auf der Kreditkarte.",
+ tipp:"Die Jugendschutz-Einstellungen findest du auf PS5 unter „Familie und Jugendschutz“, bei Xbox in der App „Xbox Family Settings“."}}
+];
+
+/* ---------- Quiz ---------- */
+const Q=[
+ {q:"In welchem Jahr erschien das allererste Grand Theft Auto?",a:["1997","2001","1993","2004"],l:"g1",ex:"GTA erschien 1997 – entwickelt von DMA Design aus Dundee."},
+ {q:"Wie hieß das Projekt ursprünglich?",a:["Race'n'Chase","Car Wars","City Thief","Street Hunter"],l:"g1",ex:"Ursprünglich war es ein Polizei-Verfolgungsspiel namens „Race'n'Chase“."},
+ {q:"Was ist hier zu sehen?",img:"g1",a:["Top-Down-Ansicht wie in GTA 1","Die Karte von GTA V","Ein Rennspiel-Menü","Die Leonida Keys"],l:"g1",ex:"GTA 1 und 2 zeigten die Stadt senkrecht von oben – die Top-Down-Ansicht."},
+ {q:"Mit welchem Teil wurde GTA zum ersten Mal komplett 3D?",a:["GTA III","GTA 2","Vice City","GTA IV"],l:"g2",ex:"GTA III (2001) brachte die erste vollständig dreidimensionale Stadt."},
+ {q:"Für welche Konsole erschien GTA III zuerst?",a:["PlayStation 2","Nintendo 64","Xbox 360","PlayStation 4"],l:"g2",ex:"GTA III erschien im Oktober 2001 für die PlayStation 2."},
+ {q:"In welchem Jahr spielt die Geschichte von Vice City (2002)?",a:["1986","1992","1999","2008"],l:"g3",ex:"Vice City spielt 1986 – passend zur Neon- und 80er-Jahre-Stimmung."},
+ {q:"Wie viele Großstädte gibt es in GTA: San Andreas?",a:["3","1","2","5"],l:"g3",ex:"Los Santos, San Fierro und Las Venturas."},
+ {q:"Wie viele Hauptfiguren hat GTA V?",a:["3","1","2","4"],l:"g4",ex:"Michael, Franklin und Trevor – man kann zwischen ihnen wechseln."},
+ {q:"Rechne: GTA V erschien 2013, GTA VI 2026. Wie viele Jahre liegen dazwischen?",a:["13","11","12","15"],l:"g5",ex:"2026 − 2013 = 13 Jahre."},
+ {q:"Wie heißen die beiden Hauptfiguren von GTA VI?",a:["Lucia & Jason","Niko & Roman","Tommy & Lance","Michael & Trevor"],l:"g5",ex:"GTA VI erzählt die Geschichte des Duos Lucia und Jason."},
+ {q:"An welchem Tag ist GTA VI erschienen?",a:["19. November 2026","26. Mai 2026","17. September 2025","1. Dezember 2026"],l:"g5",ex:"Nach zwei Verschiebungen erschien GTA VI am 19.11.2026."},
+ {q:"Welche echte Stadt ist das Vorbild für Liberty City?",a:["New York","Chicago","Boston","Miami"],l:"s1",ex:"Liberty City ist New York nachempfunden."},
+ {q:"Welcher Stadtteil von Liberty City entspricht Manhattan?",a:["Algonquin","Broker","Bohan","Alderney"],l:"s1",ex:"Algonquin ist das Manhattan der Spielwelt."},
+ {q:"Was ist hier zu sehen?",img:"s1",a:["Die Karte von Liberty City","Die Karte von Leonida","San Andreas","Ein Flughafen"],l:"s1",ex:"Inseln wie Algonquin, Dukes und Broker gehören zu Liberty City."},
+ {q:"Welche Stadt ist das Vorbild für Vice City?",a:["Miami","Los Angeles","Las Vegas","San Francisco"],l:"s2",ex:"Vice City ist das Miami der GTA-Welt."},
+ {q:"Welche Stadt in San Andreas entspricht Las Vegas?",a:["Las Venturas","San Fierro","Los Santos","Vinewood"],l:"s3",ex:"Las Venturas liegt in der Wüste und ist das Las Vegas der Spielwelt."},
+ {q:"Was ist Vinewood?",a:["Das Hollywood von Los Santos","Ein Weinanbaugebiet","Ein Radiosender","Ein Auto"],l:"s4",ex:"Vinewood mit seinem Schriftzug entspricht Hollywood."},
+ {q:"Welcher echte Bundesstaat ist das Vorbild für Leonida?",a:["Florida","Kalifornien","Texas","New York"],l:"s5",ex:"Leonida ist das Florida der GTA-Welt."},
+ {q:"Grassrivers in GTA VI ist angelehnt an …",a:["die Everglades","den Grand Canyon","die Rocky Mountains","die Niagarafälle"],l:"s5",ex:"Grassrivers sind Sümpfe wie die Everglades in Florida."},
+ {q:"Was ist hier zu sehen?",img:"m2",a:["Das Fahndungslevel mit Sternen","Eine Hotel-Bewertung","Die Lebensanzeige","Eine Schatzkarte"],l:"m2",ex:"Die Sterne zeigen, wie stark die Polizei im Spiel nach dir sucht."},
+ {q:"Rechne: 3 von 5 Fahndungssternen – wie viel Prozent sind das?",a:["60 %","30 %","50 %","75 %"],l:"m2",ex:"3 ÷ 5 = 0,6 = 60 %."},
+ {q:"Was bedeutet das „Sandbox“-Prinzip?",a:["Man entscheidet selbst, was man wann macht","Das Spiel spielt am Strand","Man baut Sandburgen","Es gibt nur eine feste Reihenfolge"],l:"m1",ex:"Wie im Sandkasten: Freiheit statt fester Reihenfolge."},
+ {q:"Warum haben die Autos in GTA erfundene Marken?",a:["So braucht man keine Lizenzen der Hersteller","Weil echte Autos verboten sind","Weil die Grafik es nicht kann","Aus Platzgründen"],l:"m4",ex:"Fiktive Marken mit echten Vorbildern – ohne Herstellerlizenzen."},
+ {q:"Warum fehlen in Neuauflagen manchmal Lieder im Radio?",a:["Musik-Lizenzen sind ausgelaufen","Die Lieder waren zu lang","Der Speicher war voll","Die Sender wurden gelöscht"],l:"m5",ex:"Die Musik ist lizenziert – läuft eine Lizenz aus, muss das Lied raus."},
+ {q:"Wem gehört Rockstar Games?",a:["Take-Two Interactive","Sony","Microsoft","Electronic Arts"],l:"t1",ex:"Rockstar Games ist ein Tochterunternehmen von Take-Two Interactive."},
+ {q:"Wie hieß Rockstar North früher?",a:["DMA Design","Rockstar Toronto","RenderWare","Euphoria"],l:"t1",ex:"Rockstar North in Edinburgh war früher DMA Design."},
+ {q:"Wofür steht RAGE?",a:["Rockstar Advanced Game Engine","Real Action Game Editor","Racing And Gaming Engine","Rockstar Audio Graphics Editor"],l:"t2",ex:"RAGE = Rockstar Advanced Game Engine, genutzt ab GTA IV."},
+ {q:"Was bedeutet LOD?",a:["Level of Detail – weniger Details in der Ferne","Load On Demand – nur Musik laden","Lots Of Driving","Light Of Day"],l:"t3",ex:"LOD heißt Level of Detail: Entfernte Objekte werden vereinfacht dargestellt."},
+ {q:"Was ist hier zu sehen?",img:"t3",a:["Detailstufen rund um die Spielfigur","Ein Radar für Flugzeuge","Eine Zielscheibe","Wellen im Wasser"],l:"t3",ex:"Nahe Objekte haben volle Details, weiter entfernte werden vereinfacht – LOD."},
+ {q:"Was tragen Schauspieler beim Motion-Capture?",a:["Einen Anzug mit Markierungspunkten","Eine Taucherbrille","Eine Polizeiuniform","Nichts Besonderes"],l:"t4",ex:"Die Punkte werden von vielen Kameras gefilmt und aufs 3D-Modell übertragen."},
+ {q:"Rechne: 1 Milliarde $ in 3 Tagen – wie viel ist das ungefähr pro Tag?",a:["333 Mio. $","100 Mio. $","500 Mio. $","3 Mrd. $"],l:"t5",ex:"1.000 Mio. ÷ 3 ≈ 333 Mio. $ pro Tag."},
+ {q:"Wie viele Exemplare hat GTA V laut Take-Two (2026) verkauft?",a:["über 230 Millionen","rund 50 Millionen","rund 100 Millionen","über 1 Milliarde"],l:"t5",ex:"Laut Take-Two über 230 Millionen – nur Minecraft hat mehr."},
+ {q:"Welche USK-Freigabe hat GTA VI in Deutschland?",a:["USK 18","USK 16","USK 12","keine Prüfung"],l:"j1",ex:"Wie GTA IV und GTA V: keine Jugendfreigabe, also USK 18."},
+ {q:"Welche Farbe hat das USK-Kennzeichen „ab 18“?",a:["Rot","Blau","Grün","Gelb"],l:"j1",ex:"0 weiß, 6 gelb, 12 grün, 16 blau, 18 rot."},
+ {q:"„Sprunk“ in GTA ist eine Parodie auf …",a:["Sprite","Red Bull","Fanta","Pepsi"],l:"j2",ex:"Sprunk ist die GTA-Version von Sprite – Satire auf Werbung und Marken."},
+ {q:"Wie hieß der Skandal um San Andreas im Jahr 2005?",a:["Hot Coffee","Cold Tea","Red Star","Dark Mode"],l:"j3",ex:"Beim „Hot Coffee“-Skandal ging es um versteckte, nicht jugendfreie Inhalte."},
+ {q:"Was sagt der US-Psychologenverband APA (2020) zu Spielen und echten Gewalttaten?",a:["Kein ausreichender Beleg, dass Spiele die Ursache sind","Spiele sind eindeutig die Ursache","Spiele verhindern Gewalt komplett","Das wurde nie untersucht"],l:"j4",ex:"Die APA sah keine ausreichenden Belege für Spiele als Ursache echter Gewalt."},
+ {q:"Rechne: 2 Stunden Spielzeit pro Tag – wie viele Stunden sind das in einer Woche?",a:["14","12","9","20"],l:"j5",ex:"2 × 7 = 14 Stunden."}
+];
+
+/* ---------- Hilfen ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const col=c=>!c?"var(--tx)":(c[0]==="#"?c:`var(--${c})`);
+const clamp=v=>v<0?0:v>1?1:v;
+const ease=p=>1-Math.pow(1-p,3);
+const area=id=>AREAS.find(a=>a.id===id);
+const seen=()=>store.get("seen",{});
+function markSeen(id){const s=seen();if(!s[id]){s[id]=1;store.set("seen",s)}}
+function go(h){if(location.hash===h)route();else location.hash=h}
+
+/* ---------- Renderer ---------- */
+function starPts(x,y,r){let p=[];for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.45:r;p.push((x+Math.cos(a)*rr).toFixed(1)+","+(y+Math.sin(a)*rr).toFixed(1))}return p.join(" ")}
+function along(pts,f){let segs=[],tot=0;for(let i=1;i<pts.length;i++){const l=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);segs.push(l);tot+=l}
+ let d=f*tot;for(let i=0;i<segs.length;i++){if(d<=segs[i]||i===segs.length-1){const k=segs[i]?Math.min(1,d/segs[i]):0;const a=pts[i],b=pts[i+1];return[a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k,Math.atan2(b[1]-a[1],b[0]-a[0])]}d-=segs[i]}return[pts[0][0],pts[0][1],0]}
+function pillW(t){return t.length*6.1+18}
+function drawEl(e,p,lt,op){
+ const c=col(e.c),o=(e.o==null?1:e.o),st=e.st?`;stroke:${col(e.st)};stroke-width:1.5`:"";const P1=ease(p);
+ switch(e.t){
+ case"rect":return `<rect x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" rx="${e.r||0}" style="fill:${c};fill-opacity:${o}${st}" opacity="${P1*op}"/>`;
+ case"bar":{const h=e.h*P1;return `<rect x="${e.x}" y="${e.y+e.h-h}" width="${e.w}" height="${h}" rx="4" style="fill:${c}" opacity="${op}"/>`}
+ case"hbar":return `<rect x="${e.x}" y="${e.y}" width="${Math.max(0,e.w*P1)}" height="${e.h}" rx="4" style="fill:${c}" opacity="${op}"/><rect x="${e.x}" y="${e.y}" width="${e.w}" height="${e.h}" rx="4" style="fill:none;stroke:${c};stroke-opacity:.25" opacity="${op}"/>`;
+ case"circ":return `<circle cx="${e.x}" cy="${e.y}" r="${e.r*(.6+.4*P1)}" style="fill:${c};fill-opacity:${o}${st}" opacity="${P1*op}"/>`;
+ case"line":{const x2=e.x1+(e.x2-e.x1)*P1,y2=e.y1+(e.y2-e.y1)*P1;return `<line x1="${e.x1}" y1="${e.y1}" x2="${x2}" y2="${y2}" style="stroke:${c};stroke-width:${e.w||2};stroke-linecap:round${e.dash?`;stroke-dasharray:${e.dash}`:""}" opacity="${op}"/>`}
+ case"arrow":{const x2=e.x1+(e.x2-e.x1)*P1,y2=e.y1+(e.y2-e.y1)*P1,a=Math.atan2(e.y2-e.y1,e.x2-e.x1),h=8;
+  return `<g opacity="${op}"><line x1="${e.x1}" y1="${e.y1}" x2="${x2}" y2="${y2}" style="stroke:${c};stroke-width:2.5;stroke-linecap:round"/><polygon points="${x2},${y2} ${x2-h*Math.cos(a-.5)},${y2-h*Math.sin(a-.5)} ${x2-h*Math.cos(a+.5)},${y2-h*Math.sin(a+.5)}" style="fill:${c}"/></g>`}
+ case"path":return `<path d="${e.pd}" pathLength="1" style="fill:none;stroke:${c};stroke-width:${e.w||2};stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:${1-P1}" opacity="${op}"/>`;
+ case"poly":return `<polygon points="${e.pts}" style="fill:${c};fill-opacity:${o}${st}" opacity="${P1*op}"/>`;
+ case"txt":return `<text x="${e.x}" y="${e.y}" text-anchor="${e.an||"middle"}" style="fill:${c};font-size:${e.size||10}px;font-weight:${e.b?700:500}${e.m?";font-family:ui-monospace,Consolas,monospace":""}" opacity="${P1*op}">${esc(e.txt)}</text>`;
+ case"emo":return `<text x="${e.x}" y="${e.y}" text-anchor="middle" dominant-baseline="middle" style="font-size:${e.size||16}px" opacity="${P1*op}" transform="translate(${e.x} ${e.y}) scale(${.5+.5*P1}) translate(${-e.x} ${-e.y})">${e.txt}</text>`;
+ case"pill":{const w=pillW(e.txt),s=.7+.3*P1;return `<g opacity="${P1*op}" transform="translate(${e.x} ${e.y}) scale(${s})"><rect x="${-w/2}" y="-10" width="${w}" height="20" rx="10" style="fill:${c}"/><text x="0" y="3.8" text-anchor="middle" style="fill:#fff;font-size:10.5px;font-weight:700">${esc(e.txt)}</text></g>`}
+ case"star":{let ob=P1*op;if(e.blink)ob*=lt%0.8<0.4?1:.15;return `<polygon points="${starPts(e.x,e.y,e.r)}" style="fill:${e.fill?c:"none"};stroke:${c};stroke-width:1.8;stroke-linejoin:round" opacity="${ob}"/>`}
+ case"ring":{const k=(lt%1.6)/1.6;return `<circle cx="${e.x}" cy="${e.y}" r="${e.r*(.4+.6*k)}" style="fill:none;stroke:${c};stroke-width:2" opacity="${(1-k)*op*P1}"/>`}
+ case"car":{let f=lt/(e.dur||4);if(e.lag)f-=e.lag/(e.dur||4);if(e.loop)f=((f%1)+1)%1;else f=clamp(f);if(f<0)return"";const[x,y,a]=along(e.pts,f);const sc=e.sc||.5;
+  return `<g opacity="${P1*op}" transform="translate(${x} ${y}) rotate(${a*180/Math.PI}) scale(${sc})"><rect x="-22" y="-11" width="44" height="22" rx="6" style="fill:${c}"/><rect x="2" y="-8" width="12" height="16" rx="3" style="fill:var(--scene);opacity:.7"/></g>`}
+ case"carx":return `<g opacity="${P1*op}">${carShape(e.x,e.y,e.c,e.dmg)}</g>`;
+ case"needle":{const f=clamp(lt/(e.dur||4));const x=e.x0+(e.x1-e.x0)*(.5-.5*Math.cos(f*Math.PI*1.5))*1;return `<line x1="${x}" y1="${e.y1}" x2="${x}" y2="${e.y2}" style="stroke:${c};stroke-width:3;stroke-linecap:round" opacity="${P1*op}"/>`}
+ case"hand":{const a=lt*1.2;return `<line x1="${e.x}" y1="${e.y}" x2="${e.x+Math.sin(a)*e.r}" y2="${e.y-Math.cos(a)*e.r}" style="stroke:${c};stroke-width:3;stroke-linecap:round" opacity="${P1*op}"/><line x1="${e.x}" y1="${e.y}" x2="${e.x+Math.sin(a/12)*e.r*.6}" y2="${e.y-Math.cos(a/12)*e.r*.6}" style="stroke:var(--tx);stroke-width:4;stroke-linecap:round" opacity="${P1*op}"/>`}
+ }return""}
+function renderScene(els,t){let out="";for(const e of els){const start=e.s*D+(e.d||0);if(t<start)continue;const lt=t-start;const p=clamp(lt/.7);
+ let op=1;if(e.e!=null){const et=e.e*D;if(t>=et)op=clamp(1-(t-et)/.4);if(op<=0)continue}
+ if(e.e2!=null){const et=e.s*D+e.e2;if(t>=et)op=Math.min(op,clamp(1-(t-et)/.4));if(op<=0)continue}
+ out+=drawEl(e,p,lt,op)}return out}
+function svgWrap(inner){return `<svg viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg" role="img">${inner}</svg>`}
+
+/* ---------- Player ---------- */
+let player=null;
+function stopPlayer(){if(player){cancelAnimationFrame(player.raf);player=null}}
+function startPlayer(les){stopPlayer();const n=les.steps.length,total=n*D;
+ const pl={les,t:0,playing:true,speed:store.get("speed",1),last:performance.now(),step:-1,total,raf:0};player=pl;
+ const svg=$("#svg"),rng=$("#rng"),pbtn=$("#pp");
+ function setStep(i){if(i===pl.step)return;pl.step=i;$("#sk").textContent=`SCHRITT ${i+1} / ${n}`;$("#st").textContent=les.steps[i];
+  document.querySelectorAll(".steps button").forEach((b,k)=>{b.classList.toggle("on",k===i);b.classList.toggle("done",k<i)})}
+ function frame(now){if(player!==pl)return;const dt=Math.min(.1,(now-pl.last)/1000);pl.last=now;
+  if(pl.playing){pl.t+=dt*pl.speed;if(pl.t>=total){pl.t=total;pl.playing=false;pbtn.textContent="▶"}}
+  const sh=Math.min(pl.t,total-.001);svg.innerHTML=renderScene(les.els,pl.t);rng.value=Math.round(sh/total*1000);
+  setStep(Math.min(n-1,Math.floor(sh/D)));pl.raf=requestAnimationFrame(frame)}
+ pbtn.onclick=()=>{if(pl.t>=total)pl.t=0;pl.playing=!pl.playing;pbtn.textContent=pl.playing?"❚❚":"▶"};
+ $("#rs").onclick=()=>{pl.t=0;pl.playing=true;pbtn.textContent="❚❚"};
+ rng.oninput=()=>{pl.t=rng.value/1000*total;};
+ document.querySelectorAll(".speeds .pbtn").forEach(b=>{b.classList.toggle("on",+b.dataset.s===pl.speed);b.onclick=()=>{pl.speed=+b.dataset.s;store.set("speed",pl.speed);document.querySelectorAll(".speeds .pbtn").forEach(x=>x.classList.toggle("on",x===b))}});
+ document.querySelectorAll(".steps button").forEach((b,k)=>b.onclick=()=>{pl.t=k*D+.01;pl.playing=true;pbtn.textContent="❚❚"});
+ pbtn.textContent="❚❚";pl.raf=requestAnimationFrame(frame)}
+
+/* ---------- Ansichten ---------- */
+function progArea(aid){const ls=L.filter(l=>l.a===aid),s=seen();return[ls.filter(l=>s[l.id]).length,ls.length]}
+function viewHome(){const s=seen(),done=L.filter(l=>s[l.id]).length,best=store.get("best",null);
+ let h=`<section class="hero"><div class="kicker mono">LERN-APP · ${L.length} LEKTIONEN</div><h1 class="mono">GTA verstehen</h1>
+ <p>Geschichte, Städte, Spielmechanik, Technik und Jugendschutz der Spielereihe Grand Theft Auto – erklärt mit kleinen Videos.</p>
+ <div class="prog"><i style="width:${done/L.length*100}%"></i></div><p style="margin-top:6px;font-size:12px">${done} von ${L.length} Lektionen gesehen</p></section><div class="bento">`;
+ AREAS.forEach((a,i)=>{const[d,n]=progArea(a.id);h+=`<button class="tile ${i===0?"big":""}" style="--ac:${col(a.c)}" onclick="go('#b-${a.id}')">
+  <div class="ico">${a.icon}</div><div class="tag mono">BEREICH ${i+1}</div><h3>${a.name}</h3><p>${a.desc}</p>
+  <div class="bar"><span class="t"><i style="width:${d/n*100}%"></i></span><span class="mono">${d}/${n}</span></div></button>`});
+ h+=`<button class="tile big" style="--ac:var(--pink)" onclick="go('#quiz')"><div class="ico">🎯</div><div class="tag mono">QUIZ</div><h3>Teste dein Wissen</h3>
+ <p>10 zufällige Fragen – mit Bilderfragen und Rechenaufgaben.</p><div class="bar"><span class="mono">Bestwert: ${best==null?"–":best+" / 10"}</span></div></button></div>
+ <div class="note"><b>Hinweis:</b> Die GTA-Spiele selbst haben in Deutschland „USK ab 18“. Diese App erklärt Geschichte, Technik und Hintergründe – ohne Spielszenen.</div>`;
+ return h}
+function viewArea(aid){const a=area(aid);if(!a)return viewHome();const ls=L.filter(l=>l.a===aid),s=seen();
+ let h=`<button class="back" onclick="go('#start')">← Startseite</button><div class="ahead" style="--ac:${col(a.c)}"><div class="ico">${a.icon}</div><h2>${a.name}</h2><p>${a.desc}</p></div><div class="list">`;
+ ls.forEach((l,i)=>{h+=`<button class="lcard ${s[l.id]?"seen":""}" style="--ac:${col(a.c)}" onclick="go('#l-${l.id}')"><div><div class="n mono">LEKTION ${i+1}</div><h4>${l.title}</h4><p>${l.sub}</p></div><span class="chk">${s[l.id]?"✓":"▶"}</span></button>`});
+ return h+"</div>"}
+function viewLesson(id){const l=L.find(x=>x.id===id);if(!l)return viewHome();const a=area(l.a);markSeen(id);const ls=L.filter(x=>x.a===l.a),i=ls.indexOf(l);
+ const gi=L.indexOf(l),prev=L[gi-1],next=L[gi+1];
+ return `<div style="--ac:${col(a.c)}"><button class="back" onclick="go('#b-${a.id}')">← ${a.name}</button>
+ <div class="lh"><div class="n mono">${a.icon} LEKTION ${i+1} / ${ls.length}</div><h2>${l.title}</h2></div>
+ <div class="player"><div class="stage"><svg id="svg" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg"></svg></div>
+ <div class="ctrl"><div class="row"><button class="pbtn main" id="pp" aria-label="Abspielen/Pause">❚❚</button><input type="range" id="rng" min="0" max="1000" value="0" aria-label="Spulen"><button class="pbtn" id="rs" aria-label="Neustart">↺</button></div>
+ <div class="row" style="margin-top:8px;justify-content:space-between"><div class="speeds"><button class="pbtn" data-s="0.5">½×</button><button class="pbtn" data-s="1">1×</button><button class="pbtn" data-s="2">2×</button></div><span class="mono" style="font-size:11px;color:var(--mut)">Schritte</span></div>
+ <div class="steps">${l.steps.map((_,k)=>`<button>${k+1}</button>`).join("")}</div></div></div>
+ <div class="stxt"><div class="k mono" id="sk">SCHRITT 1 / ${l.steps.length}</div><p id="st">${l.steps[0]}</p></div>
+ <div class="info"><div class="ibox" style="--c:var(--blue)"><b class="mono">WAS IST DAS?</b><p>${l.info.was}</p></div>
+ <div class="ibox" style="--c:var(--green)"><b class="mono">SO ERKENNST DU ES</b><p>${l.info.so}</p></div>
+ <div class="ibox" style="--c:var(--gold)"><b class="mono">WAS BEDEUTET ES?</b><p>${l.info.bed}</p></div>
+ <div class="ibox" style="--c:var(--red)"><b class="mono">TIPP</b><p>${l.info.tipp}</p></div></div>
+ <div class="nav2"><button ${prev?"":"disabled"} onclick="go('#l-${prev?prev.id:""}')"><small>← Zurück</small>${prev?prev.title:"–"}</button>
+ <button class="r" ${next?"":"disabled"} onclick="go('#l-${next?next.id:""}')"><small>Weiter →</small>${next?next.title:"–"}</button></div></div>`}
+
+/* ---------- Quiz ---------- */
+let quiz=null;
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function newQuiz(){quiz={qs:shuffle(Q).slice(0,10).map(q=>({...q,opts:shuffle(q.a.map((t,i)=>({t,ok:i===0})))})),i:0,pts:0,wrong:[],answered:false}}
+function viewQuiz(){if(!quiz)newQuiz();const z=quiz;
+ if(z.i>=z.qs.length){const best=Math.max(store.get("best",0)||0,z.pts);store.set("best",best);
+  const rep=[...new Set(z.wrong)].map(id=>L.find(l=>l.id===id));
+  return `<div style="--ac:var(--pink)"><button class="back" onclick="go('#start')">← Startseite</button><div class="qcard" style="text-align:center">
+  <div class="kicker mono">ERGEBNIS</div><div class="score mono">${z.pts} / 10</div><p style="color:var(--mut);margin:0">Bestwert: ${best} / 10</p>
+  ${rep.length?`<p style="margin:16px 0 0;text-align:left;font-weight:700">Diese Lektionen solltest du wiederholen:</p><ul class="rep">${rep.map(l=>`<li><button onclick="go('#l-${l.id}')">${area(l.a).icon} ${l.title}</button></li>`).join("")}</ul>`:`<p style="margin-top:14px">Alles richtig – stark! 🏆</p>`}
+  <div class="qbtns"><button class="main" onclick="newQuiz();route()">Neues Quiz</button><button onclick="go('#start')">Zur Startseite</button></div></div></div>`}
+ const q=z.qs[z.i];const img=q.img?L.find(l=>l.id===q.img):null;
+ return `<div style="--ac:var(--pink)"><button class="back" onclick="go('#start')">← Startseite</button><div class="qcard">
+ <div class="qtop mono"><span>FRAGE ${z.i+1} / 10</span><span>Punkte: ${z.pts}</span></div><div class="prog" style="margin:0 0 10px"><i style="width:${z.i*10}%"></i></div>
+ ${img?`<div class="qimg">${svgWrap(renderScene(img.els.filter(e=>e.e==null),99))}</div>`:""}
+ <h3>${q.q}</h3><div class="opts">${q.opts.map((o,k)=>`<button class="opt" data-k="${k}">${o.t}</button>`).join("")}</div><div id="fb"></div></div></div>`}
+function bindQuiz(){const z=quiz;if(!z||z.i>=z.qs.length)return;const q=z.qs[z.i];
+ document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if(z.answered)return;z.answered=true;const o=q.opts[+b.dataset.k];
+  if(o.ok)z.pts++;else z.wrong.push(q.l);
+  document.querySelectorAll(".opt").forEach((x,k)=>{if(q.opts[k].ok)x.classList.add("ok");else if(x===b)x.classList.add("no")});
+  const l=L.find(x=>x.id===q.l);
+  $("#fb").innerHTML=`<div class="fb"><b class="${o.ok?"ok":"no"}">${o.ok?"✓ Richtig!":"✗ Leider falsch."}</b> ${q.ex}</div>
+  <div class="qbtns"><button onclick="go('#l-${l.id}')">📖 Zur Lektion</button><button class="main" id="nx">${z.i<9?"Nächste Frage →":"Ergebnis anzeigen"}</button></div>`;
+  $("#nx").onclick=()=>{z.i++;z.answered=false;route();window.scrollTo(0,0)}})}
+
+/* ---------- Seitenleiste (PC) ---------- */
+function renderSide(cur){const s=seen(),qv=(store._q||"").toLowerCase();
+ let h=`<div class="brand" onclick="go('#start')"><div class="logo mono">GTA</div><div><b class="mono">GTA-SCHULE</b><small>${L.filter(l=>s[l.id]).length}/${L.length} gesehen</small></div></div>
+ <input id="sq" placeholder="🔍 Lektion suchen …" value="${esc(store._q||"")}">`;
+ AREAS.forEach(a=>{const ls=L.filter(l=>l.a===a.id&&(!qv||(l.title+" "+l.sub+" "+l.steps.join(" ")).toLowerCase().includes(qv)));if(!ls.length)return;
+  h+=`<div class="sg mono" style="color:${col(a.c)}">${a.icon} ${a.name.toUpperCase()}</div>`;
+  ls.forEach(l=>h+=`<button class="si ${cur===l.id?"on":""}" onclick="go('#l-${l.id}')">${l.title}<span class="d">${s[l.id]?"✓":""}</span></button>`)});
+ h+=`<div class="sg mono" style="color:var(--pink)">🎯 QUIZ</div><button class="si ${cur==="quiz"?"on":""}" onclick="go('#quiz')">10 Fragen starten</button>`;
+ $("#side").innerHTML=h;const inp=$("#sq");inp.oninput=()=>{store._q=inp.value;const pos=inp.selectionStart;renderSide(cur);const n=$("#sq");n.focus();n.setSelectionRange(pos,pos)}}
+
+/* ---------- Routing ---------- */
+function route(){stopPlayer();const h=location.hash||"#start";const m=h.slice(1);let cur="";
+ const v=$("#view");
+ if(m.startsWith("b-")){v.innerHTML=viewArea(m.slice(2))}
+ else if(m.startsWith("l-")){const id=m.slice(2);v.innerHTML=viewLesson(id);cur=id;const l=L.find(x=>x.id===id);if(l)startPlayer(l)}
+ else if(m==="quiz"){v.innerHTML=viewQuiz();bindQuiz();cur="quiz"}
+ else v.innerHTML=viewHome();
+ renderSide(cur);if(route._last!==h)window.scrollTo(0,0);route._last=h}
+window.addEventListener("hashchange",()=>{if(location.hash==="#quiz"&&quiz&&quiz.i>=quiz.qs.length)newQuiz();route()});
+route();
+if("serviceWorker"in navigator&&location.protocol==="https:"&&!/claude|anthropic|usercontent/.test(location.host)){navigator.serviceWorker.register("sw.js").catch(()=>{})}
+</script>
+</body>
+</html>
